@@ -20,7 +20,7 @@
   "keywords": [
     "Telescope",
     "Astronomy"
-  ], 
+  ],
   "author": "Pingoin",
   "license": "MIT",
   "bugs": {
@@ -28,10 +28,12 @@
   },
   "homepage": "https://github.com/Pingoin/pingoscope#readme",
   "dependencies": {
+    "astronomical-algorithms": "^1.4.2",
     "body-parser": "^1.19.0",
     "core-js": "^3.12.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "geomag": "^1.0.0",
     "lokijs": "^1.5.12"
   },
   "devDependencies": {

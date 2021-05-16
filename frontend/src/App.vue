@@ -3,7 +3,7 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>The hunter Helper</v-toolbar-title>
+      <v-toolbar-title>Pingoscope</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -32,69 +32,15 @@
               ></v-list-item-title
             >
           </v-list-item>
-
           <v-list-item>
             <v-list-item-title
-              ><router-link to="/maps" exact exact-active-class="active"
-                >Maps</router-link
-              ></v-list-item-title
-            >
+              ><a href="/api/test" target="_blank">API Test</a>
+            </v-list-item-title>
           </v-list-item>
           <v-list-item>
             <v-list-item-title
-              ><router-link to="/overview" exact exact-active-class="active"
-                >Übersicht</router-link
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><router-link to="/callers" exact exact-active-class="active"
-                >Rufer</router-link
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><router-link to="/animals" exact exact-active-class="active"
-                >Tiere</router-link
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><router-link to="/calibers" exact exact-active-class="active"
-                >Munition</router-link
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><a href="/api/animals" target="_blank"
-                >API Tiere</a
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><a href="/api/callers" target="_blank"
-                >API Rufer</a
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><a href="/api/calibers" target="_blank"
-                >API Munition</a
-              ></v-list-item-title
-            >
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              ><a href="/api/maps" target="_blank"
-                >API Karten</a
-              ></v-list-item-title
-            >
+              ><a href="/api/data" target="_blank">API Store</a>
+            </v-list-item-title>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -123,6 +69,7 @@ export default class App extends Vue {
   }
   created() {
     this.loadData();
+    setInterval(this.loadData.bind(this),1000)
   }
 }
 </script>

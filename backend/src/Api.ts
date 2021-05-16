@@ -1,14 +1,16 @@
 import express from "express";
 import cors from "cors";
+import Store from "./Store";
  
 const PORT=8080;
 
 export default class Api {
     public express: express.Application;
+    private Store:Store;
     constructor() {
         this.express = express();
         this.express.set("port", PORT);
-
+        this.Store=Store.getInstance();
         this.middleware();
         this.routes();
         this.express.listen(PORT, () => {
@@ -22,7 +24,10 @@ export default class Api {
     }
     private routes(): void {
         this.express.get("/api/test", (req, res) => {
-            res.send("Server Lebt")
+            res.send("Server Lebt");
+        });
+        this.express.get("/api/data", (req, res) => {
+            res.json(this.Store.simplify());
         });
     }
 }
