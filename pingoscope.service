@@ -1,0 +1,13 @@
+# copy this file to /lib/systemd/system/
+
+[Unit]
+Description=Controller for Azimuth Telescopes
+After=network-online.target
+
+[Service]
+Restart=on-failure
+WorkingDirectory=/opt/pingoscope/dist/
+ExecStart=/usr/bin/node /opt/pingoscope/dist/index.js
+
+[Install]
+WantedBy=multi-user.target

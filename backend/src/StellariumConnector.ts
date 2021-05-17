@@ -62,7 +62,7 @@ export default class StellariumConnector {
       rightAscension: (chunk.readUInt32LE(12) / 0x100000000) * 24,
       declination: (chunk.readInt32LE(16) / 0x40000000) * 90
     };
-    this.Store.targetPosition.equatorial = data;
+    this.Store.stellariumTarget.equatorial = data;
   }
 
   private sendPosition(): void {

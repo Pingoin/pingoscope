@@ -58,6 +58,21 @@ export default new Vuex.Store({
           rightAscension: ""
         }
       },
+      stellariumTarget: {
+        equatorial: {
+          declination: 0,
+          rightAscension: 0
+        },
+        horizontal: {
+          altitude:0,
+          azimuth:0
+        },
+        horizontalString: { azimuth: "", altitude: "" },
+        equatorialString: {
+          declination: "",
+          rightAscension: ""
+        }
+      },
     }
   },
   mutations: {

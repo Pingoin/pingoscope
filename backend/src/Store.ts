@@ -37,6 +37,7 @@ export class Store {
   }
   public sensorPosition: StellarPosition = new StellarPosition("horizontal");
   public targetPosition: StellarPosition = new StellarPosition("equatorial");
+  public stellariumTarget: StellarPosition = new StellarPosition("equatorial");
   public actualPosition: StellarPosition = new StellarPosition("horizontal");
   constructor() {
     this.latitude = 53 + 44 / 60 + 16.44 / 3600;
@@ -67,6 +68,12 @@ export class Store {
         equatorial: this.actualPosition.equatorial,
         horizontalString: this.actualPosition.horizontalString,
         equatorialString: this.actualPosition.equatorialString
+      },
+      stellariumTarget: {
+        horizontal: this.stellariumTarget.horizontal,
+        equatorial: this.stellariumTarget.equatorial,
+        horizontalString: this.stellariumTarget.horizontalString,
+        equatorialString: this.stellariumTarget.equatorialString
       }
     };
   }
