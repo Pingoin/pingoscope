@@ -10,7 +10,6 @@ export interface Store extends StoreData {}
  * central data store
  */
 export class Store {
-  private static instance: Store;
   public magneticDeclination = 0;
   private _longitude: number;
   public get longitude(): number {
@@ -35,12 +34,6 @@ export class Store {
     this._latitude = value;
     const field = geomag.field(this.latitude, this.longitude);
     this.magneticDeclination = field.declination;
-  }
-  public static getInstance(): Store {
-    if (this.instance == undefined) {
-      this.instance = new Store();
-    }
-    return this.instance;
   }
   public sensorPosition: StellarPosition = new StellarPosition("horizontal");
   public targetPosition: StellarPosition = new StellarPosition("equatorial");

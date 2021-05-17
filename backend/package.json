@@ -28,13 +28,15 @@
   },
   "homepage": "https://github.com/Pingoin/pingoscope#readme",
   "dependencies": {
+    "@types/ws": "^7.4.4",
     "astronomical-algorithms": "^1.4.2",
     "body-parser": "^1.19.0",
     "core-js": "^3.12.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "geomag": "^1.0.0",
-    "lokijs": "^1.5.12"
+    "lokijs": "^1.5.12",
+    "ws": "^7.4.5"
   },
   "devDependencies": {
     "typescript": "^4.2.4",

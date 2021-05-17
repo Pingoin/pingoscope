@@ -7,10 +7,10 @@ const PORT=8080;
 export default class Api {
     public express: express.Application;
     private Store:Store;
-    constructor() {
+    constructor(store:Store) {
         this.express = express();
         this.express.set("port", PORT);
-        this.Store=Store.getInstance();
+        this.Store=store;
         this.middleware();
         this.routes();
         this.express.listen(PORT, () => {
