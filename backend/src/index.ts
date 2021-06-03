@@ -1,6 +1,7 @@
 /** @format */
 
 import Api from "./Api";
+import Gnss from "./Gnss";
 import StellariumConnector from "./StellariumConnector";
 import Store from "./Store";
 
@@ -9,3 +10,5 @@ const store = new Store();
 const api = new Api(store);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const stellarium = new StellariumConnector(10001, store);
+
+const gnss = new Gnss(store);
