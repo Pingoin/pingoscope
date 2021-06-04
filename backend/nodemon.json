@@ -10,8 +10,5 @@
         ".git",
         "node_modules"
     ],
-    "execMap": {
-        "ts": "ts-node"
-    },
     "exec": "npm run ts-node"
 }

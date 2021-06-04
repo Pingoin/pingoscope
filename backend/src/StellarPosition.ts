@@ -9,8 +9,8 @@ export default class StellarPosition {
     private _vertical: number;
     private _horizontal: number;
     private type: "horizontal" | "equatorial";
-    longitude = 14 + 2 / 60 + 40.92 / 3600;
-    latitude = 53 + 44 / 60 + 16.44 / 3600;
+    longitude = 0;
+    latitude = 0;
   
     constructor(
       type: "horizontal" | "equatorial"
