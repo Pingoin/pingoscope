@@ -41,6 +41,7 @@ The Pingoscope is a addon for a horizontal mounted telescope, it points the tele
 ### Built With
 
 * [AA.js](https://github.com/onekiloparsec/AA.js)
+* [pigpio](https://github.com/fivdi/pigpio)
 
 <!-- GETTING STARTED -->
 ## Getting Started

@@ -5,10 +5,18 @@ import Gnss from "./Gnss";
 import StellariumConnector from "./StellariumConnector";
 import Store from "./Store";
 
-const store = new Store();
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const api = new Api(store);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const stellarium = new StellariumConnector(10001, store);
+class main{
+    store:Store;
+    api:Api;
+    stellarium:StellariumConnector;
+    gnss:Gnss;
+    constructor(){
+        this.store = new Store();
+        this.api = new Api(this.store);
+        this.stellarium = new StellariumConnector(10001, this.store);
+        this.gnss = new Gnss(this.store);
+    }
 
-const gnss = new Gnss(store);
+}
+
+new main();

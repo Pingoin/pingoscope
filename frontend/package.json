@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve  --port 3070",
     "build": "vue-cli-service build",
     "update": "ncu -u && npm update"
   },
