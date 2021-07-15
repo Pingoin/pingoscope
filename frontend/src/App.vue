@@ -32,6 +32,13 @@
               ></v-list-item-title
             >
           </v-list-item>
+                    <v-list-item>
+            <v-list-item-title
+              ><router-link to="position" exact exact-active-class="active"
+                >Position</router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
           <v-list-item>
             <v-list-item-title
               ><a href="/api/test" target="_blank">API Test</a>
@@ -58,8 +65,7 @@ import { Component, Watch } from "vue-property-decorator";
 import { vxm } from "./store";
 @Component({})
 export default class App extends Vue {
-  
-  get vxm(){
+  get vxm() {
     return vxm;
   }
 
@@ -74,8 +80,8 @@ export default class App extends Vue {
     this.drawer = false;
   }
   created() {
-    this.loadData();
-    setInterval(this.loadData.bind(this),1000)
+    vxm.user.initWS();
+    setInterval(vxm.user.fetchData, 1000);
   }
 }
 </script>

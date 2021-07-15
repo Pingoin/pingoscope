@@ -4,14 +4,16 @@ import StellarPosition from "./StellarPosition";
 import {StoreData} from "./shared";
 import sysinfo from "systeminformation";
 import * as geomag from "geomag";
+import Api from "./Api";
 
 /**
  * central data store
  */
 export class Store implements StoreData {
-  public systemInformation={
-    cpuTemp:0
+  public systemInformation = {
+    cpuTemp: 0
   };
+  private api:Api;
   public magneticDeclination = 0;
   private _longitude: number;
   public get longitude(): number {
@@ -42,11 +44,12 @@ export class Store implements StoreData {
   public stellariumTarget: StellarPosition = new StellarPosition("equatorial");
   public actualPosition: StellarPosition = new StellarPosition("horizontal");
   constructor() {
+    this.api = new Api(this);
     this.latitude = 53 + 44 / 60 + 16.44 / 3600;
     this.longitude = 14 + 2 / 60 + 40.92 / 3600;
 
-    sysinfo.cpuTemperature().then(data=>{
-      this.systemInformation.cpuTemp=data.max;
+    sysinfo.cpuTemperature().then(data => {
+      this.systemInformation.cpuTemp = data.max;
     })
   }
   /**
@@ -81,7 +84,7 @@ export class Store implements StoreData {
         horizontalString: this.stellariumTarget.horizontalString,
         equatorialString: this.stellariumTarget.equatorialString
       },
-      systemInformation:this.systemInformation
+      systemInformation: this.systemInformation
     };
   }
 }

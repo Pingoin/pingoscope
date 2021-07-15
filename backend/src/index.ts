@@ -1,6 +1,6 @@
 /** @format */
 
-import Api from "./Api";
+
 import Gnss from "./Gnss";
 import StellariumConnector from "./StellariumConnector";
 import Store from "./Store";
@@ -8,13 +8,12 @@ import { ModuleThread, spawn, Thread, Worker } from "threads";
 import {Stepper} from "./Stepper";
 class main{
     store:Store;
-    api:Api;
+    
     stepper:ModuleThread<Stepper>;
     stellarium:StellariumConnector;
     gnss:Gnss;
     constructor(){
         this.store = new Store();
-        this.api = new Api(this.store);
         this.stellarium = new StellariumConnector(10001, this.store);
         this.gnss = new Gnss(this.store);
         spawn<Stepper>(new Worker("./Stepper")).then(step=>this.stepper=step).then(async ()=>{

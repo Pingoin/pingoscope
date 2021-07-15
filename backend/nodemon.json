@@ -10,5 +10,5 @@
         ".git",
         "node_modules"
     ],
-    "exec": "npm run ts-node"
+    "exec": "npm run build && npm run start"
 }

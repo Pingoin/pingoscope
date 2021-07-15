@@ -46,7 +46,7 @@ export default class Gnss {
         const msg = buffer.toString().slice(0, -3);
         const tel = msg.split(",");
         const mid = msg.slice(3, 6);
-        console.log(mid)
+        //console.log(mid)
 ;        switch (mid) {
             case "GSV":
                 const type = msg.slice(1, 3);

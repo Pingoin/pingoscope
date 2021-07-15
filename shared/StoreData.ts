@@ -14,3 +14,8 @@ export interface sysInfo{
   cpuTemp:number;
 
 }
+export interface wsPost{
+  key:string;
+  action:"set"|"get";
+  data:unknown;
+}

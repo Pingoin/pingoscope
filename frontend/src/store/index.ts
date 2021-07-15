@@ -2,7 +2,8 @@ import { createModule, mutation, action, extractVuexModule, createProxy } from "
 import Vue from 'vue';
 import Vuex from 'vuex'
 import axios from "axios";
-import {StoreData} from "../shared";
+import { StoreData, wsPost } from "../shared";
+
 
 const VuexModule = createModule({
   namespaced: "user",
@@ -10,92 +11,115 @@ const VuexModule = createModule({
 })
 Vue.use(Vuex);
 export class UserStore extends VuexModule {
-    test="kein Server";
-    storeData:StoreData={
-      magneticDeclination: 0,
-      longitude: 0,
-      latitude: 0,
-      sensorPosition: {
-        equatorial: {
-          declination: 0,
-          rightAscension: 0
-        },
-        horizontal: {
-          altitude:0,
-          azimuth:0
-        },
-        horizontalString: { azimuth: "", altitude: "" },
-        equatorialString: {
-          declination: "",
-          rightAscension: ""
-        }
+  storeData: StoreData = {
+    magneticDeclination: 0,
+    longitude: 0,
+    latitude: 0,
+    sensorPosition: {
+      equatorial: {
+        declination: 0,
+        rightAscension: 0
       },
-      targetPosition:{
-        equatorial: {
-          declination: 0,
-          rightAscension: 0
-        },
-        horizontal: {
-          altitude:0,
-          azimuth:0
-        },
-        horizontalString: { azimuth: "", altitude: "" },
-        equatorialString: {
-          declination: "",
-          rightAscension: ""
-        }
+      horizontal: {
+        altitude: 0,
+        azimuth: 0
       },
-      actualPosition: {
-        equatorial: {
-          declination: 0,
-          rightAscension: 0
-        },
-        horizontal: {
-          altitude:0,
-          azimuth:0
-        },
-        horizontalString: { azimuth: "", altitude: "" },
-        equatorialString: {
-          declination: "",
-          rightAscension: ""
-        }
+      horizontalString: { azimuth: "", altitude: "" },
+      equatorialString: {
+        declination: "",
+        rightAscension: ""
+      }
+    },
+    targetPosition: {
+      equatorial: {
+        declination: 0,
+        rightAscension: 0
       },
-      stellariumTarget: {
-        equatorial: {
-          declination: 0,
-          rightAscension: 0
-        },
-        horizontal: {
-          altitude:0,
-          azimuth:0
-        },
-        horizontalString: { azimuth: "", altitude: "" },
-        equatorialString: {
-          declination: "",
-          rightAscension: ""
-        }
+      horizontal: {
+        altitude: 0,
+        azimuth: 0
       },
-      systemInformation:{
-        cpuTemp:0
+      horizontalString: { azimuth: "", altitude: "" },
+      equatorialString: {
+        declination: "",
+        rightAscension: ""
+      }
+    },
+    actualPosition: {
+      equatorial: {
+        declination: 0,
+        rightAscension: 0
       },
-    }
-    @action async fetchData() {
-      const test=axios.get<string>("/api/test");
-      const store=axios.get<StoreData>("/api/data");
+      horizontal: {
+        altitude: 0,
+        azimuth: 0
+      },
+      horizontalString: { azimuth: "", altitude: "" },
+      equatorialString: {
+        declination: "",
+        rightAscension: ""
+      }
+    },
+    stellariumTarget: {
+      equatorial: {
+        declination: 0,
+        rightAscension: 0
+      },
+      horizontal: {
+        altitude: 0,
+        azimuth: 0
+      },
+      horizontalString: { azimuth: "", altitude: "" },
+      equatorialString: {
+        declination: "",
+        rightAscension: ""
+      }
+    },
+    systemInformation: {
+      cpuTemp: 0
+    },
+  }
+  wsClient= new WebSocket("ws://192.168.178.54:8080/");
+  @action async initWS() {
+    // Log messages from the server
+    this.wsClient.onmessage = vxm.user.handleWS;
+  }
 
-      Promise.all([test,store]).then(results=>{
-        this.test=results[0].data;
-        this.storeData=results[1].data;
-      }).catch(console.log);
+  @action async fetchData(){
+    const message:wsPost={
+      key:"StoreData",
+      action:"get",
+      data:""
     }
+    this.wsClient.send(JSON.stringify(message));
   }
-  export const store = new Vuex.Store({
-    modules: {
-      ...extractVuexModule( UserStore )
-    }
-  })
+
+ @action async handleWS(event:MessageEvent<any>){
+  const tel=JSON.parse(event.data) as wsPost;
+  console.log(tel.action +" "+ tel.key);
+
+  switch (tel.key) {
+    case "StoreData":
+      console.log(tel.data);
+      vxm.user.storeData=tel.data as StoreData;
+      break;
   
-  // Creating proxies.
-  export const vxm = {
-    user: createProxy( store, UserStore ),
+    default:
+      break;
   }
+}
+
+
+}
+
+
+export const store = new Vuex.Store({
+  modules: {
+    ...extractVuexModule(UserStore)
+  }
+})
+
+// Creating proxies.
+export const vxm = {
+  user: createProxy(store, UserStore),
+}

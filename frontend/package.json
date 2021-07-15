@@ -20,10 +20,12 @@
     "vuelayers": "^0.11.36",
     "vuetify": "^2.5.0",
     "vuex": "^3.6.2",
-    "vuex-class-component": "^2.3.5"
+    "vuex-class-component": "^2.3.5",
+    "ws": "^6.2.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/ws": "^7.4.6",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "@vue/cli-plugin-babel": "~4.5.13",

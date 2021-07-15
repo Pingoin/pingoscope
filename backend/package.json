@@ -41,7 +41,8 @@
     "serialport": "^9.1.0",
     "systeminformation": "^5.7.7",
     "threads": "^1.6.5",
-    "ws": "^7.4.5"
+    "websocket": "^1.0.34",
+    "ws": "^7.5.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
@@ -49,6 +50,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/node": "^15.0.3",
     "@types/serialport": "^8.0.1",
+    "@types/websocket": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "eslint": "^7.26.0",
