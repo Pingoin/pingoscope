@@ -1,15 +1,17 @@
 /** @format */
 
 import StellarPosition from "./StellarPosition";
-import StoreData from "../../shared/StoreData";
+import {StoreData} from "./shared";
+import sysinfo from "systeminformation";
 import * as geomag from "geomag";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Store extends StoreData {}
 /**
  * central data store
  */
-export class Store {
+export class Store implements StoreData {
+  public systemInformation={
+    cpuTemp:0
+  };
   public magneticDeclination = 0;
   private _longitude: number;
   public get longitude(): number {
@@ -42,6 +44,10 @@ export class Store {
   constructor() {
     this.latitude = 53 + 44 / 60 + 16.44 / 3600;
     this.longitude = 14 + 2 / 60 + 40.92 / 3600;
+
+    sysinfo.cpuTemperature().then(data=>{
+      this.systemInformation.cpuTemp=data.max;
+    })
   }
   /**
    * exports the Object to an JSON-String
@@ -74,7 +80,8 @@ export class Store {
         equatorial: this.stellariumTarget.equatorial,
         horizontalString: this.stellariumTarget.horizontalString,
         equatorialString: this.stellariumTarget.equatorialString
-      }
+      },
+      systemInformation:this.systemInformation
     };
   }
 }

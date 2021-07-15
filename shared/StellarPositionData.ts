@@ -1,6 +1,6 @@
 /** @format */
 
-export default interface StellarPositionData {
+export interface StellarPositionData {
   equatorial: {
     declination: number;
     rightAscension: number;

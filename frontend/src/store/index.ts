@@ -1,15 +1,17 @@
-import Vue from 'vue'
+import { createModule, mutation, action, extractVuexModule, createProxy } from "vuex-class-component";
+import Vue from 'vue';
 import Vuex from 'vuex'
 import axios from "axios";
-import StoreData from "../../../shared/StoreData";
+import {StoreData} from "../shared";
 
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
-  state: {
-    test:"kein Server",
-    storeData:{
+const VuexModule = createModule({
+  namespaced: "user",
+  strict: false,
+})
+Vue.use(Vuex);
+export class UserStore extends VuexModule {
+    test="kein Server";
+    storeData:StoreData={
       magneticDeclination: 0,
       longitude: 0,
       latitude: 0,
@@ -73,27 +75,27 @@ export default new Vuex.Store({
           rightAscension: ""
         }
       },
+      systemInformation:{
+        cpuTemp:0
+      },
     }
-  },
-  mutations: {
-    setTest(state,test:string){
-      state.test=test;
-    },
-    setStoreData(state,storeData:StoreData){
-      state.storeData=storeData;
-    }
-  },
-  actions: {
-    async fetchData(context) {
+    @action async fetchData() {
       const test=axios.get<string>("/api/test");
       const store=axios.get<StoreData>("/api/data");
 
       Promise.all([test,store]).then(results=>{
-        context.commit("setTest",results[0].data);
-        context.commit("setStoreData",results[1].data);
+        this.test=results[0].data;
+        this.storeData=results[1].data;
       }).catch(console.log);
     }
-  },
-  modules: {
   }
-})
+  export const store = new Vuex.Store({
+    modules: {
+      ...extractVuexModule( UserStore )
+    }
+  })
+  
+  // Creating proxies.
+  export const vxm = {
+    user: createProxy( store, UserStore ),
+  }

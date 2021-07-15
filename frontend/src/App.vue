@@ -55,12 +55,18 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
+import { vxm } from "./store";
 @Component({})
 export default class App extends Vue {
+  
+  get vxm(){
+    return vxm;
+  }
+
   drawer = false;
   group: any = null;
   loadData() {
-    this.$store.dispatch("fetchData");
+    vxm.user.fetchData();
   }
 
   @Watch("myWatchedProperty")

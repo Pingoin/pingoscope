@@ -1,6 +1,6 @@
-import StellarPositionData from "./StellarPositionData";
+import {StellarPositionData} from "./StellarPositionData";
 
-export default interface StoreData {
+export interface StoreData {
   magneticDeclination: number;
   longitude: number;
   latitude: number;
@@ -8,4 +8,9 @@ export default interface StoreData {
   targetPosition: StellarPositionData;
   stellariumTarget: StellarPositionData;
   actualPosition: StellarPositionData;
+  systemInformation:sysInfo;
+}
+export interface sysInfo{
+  cpuTemp:number;
+
 }
