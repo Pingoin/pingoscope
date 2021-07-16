@@ -17,6 +17,7 @@ class main{
         this.stellarium = new StellariumConnector(10001, this.store);
         this.gnss = new Gnss(this.store);
         spawn<Stepper>(new Worker("./Stepper")).then(step=>this.stepper=step).then(async ()=>{
+            this.stepper.init(5,6,13,false)
             console.log(await this.stepper.getPosStep());
             this.stepper.setTargetStep(50);
             setInterval(this.checkStepper.bind(this),1000);

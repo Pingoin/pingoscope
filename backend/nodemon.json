@@ -10,5 +10,5 @@
         ".git",
         "node_modules"
     ],
-    "exec": "npm run build && npm run start"
+    "exec": "ts-node ./src/index.ts"
 }
