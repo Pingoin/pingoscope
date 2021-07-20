@@ -2,9 +2,7 @@ import serialport from "serialport";
 import Store from "./Store";
 import child from "child_process";
 import util from "util";
-import { RPiSysfsIO } from "./rpi-sysfs-io";
-
-const gpio = new RPiSysfsIO();
+import { GPIO, GPIOstate} from "./rpi-sysfs-io";
 
 const exec = util.promisify(child.exec);
 const SAT_SOURCE = {
@@ -18,11 +16,11 @@ export default class Gnss {
     private store: Store;
     private COMport: serialport;
     private parser: serialport.parsers.Delimiter;
-    private pps: number=18;
+    private pps: GPIO=new GPIO(18,"r");
     private valid = false;
     private lastDate = new Date("2021-06-03T13:00:00.000Z");
     private newTimestamp=false;
-    private lastPPS:number=-1;
+    private lastPPS:GPIOstate=0;
 
     constructor(store: Store) {
         this.store = store;
@@ -32,32 +30,24 @@ export default class Gnss {
         });
         this.parser = this.COMport.pipe(new serialport.parsers.Delimiter({ delimiter: [0x0D, 0x0A] }));
         this.parser.on("data", this.parse.bind(this));
-        this.initPPS(this.pps);
+        setInterval(this.checkPPS.bind(this),50);
 
     }
 
     private async checkPPS(){
-        const newPPS = await gpio.readGPIO(this.pps);
+        const newPPS = await this.pps.read();
         if(newPPS>this.lastPPS){
-            this.lastPPS=newPPS;            if (this.newTimestamp){
+            this.lastPPS=newPPS;            
+            if (this.newTimestamp){
                 this.lastDate = new Date(this.lastDate.valueOf() + 1000);
                 const timeString = `${this.lastDate.getFullYear()}-${this.lastDate.getMonth() + 1}-${this.lastDate.getDate()}T${this.lastDate.getHours()}:${this.lastDate.getMinutes()}:${this.lastDate.getSeconds()}.000Z`;
-                exec(`sudo date --set="${timeString}"`).then(() => console.log(new Date()));
+                exec(`sudo date --set="${timeString}"`).then(() => {console.log(new Date())});
                 this.newTimestamp=false;
                 }
         }
             this.lastPPS=newPPS;
         
     }
-    private async initPPS(pin:number){
-        if (!(await gpio.isExportedGPIO(pin))) {
-            // export the GPIO and wait until the export is complete
-            await gpio.exportGPIO(pin, true);
-        }
-        await gpio.directionGPIO(pin, "in");
-        setInterval(this.checkPPS.bind(this),50);
-    }
-
     private parse(buffer: Buffer) {
         const msg = buffer.toString().slice(0, -3);
         const tel = msg.split(",");

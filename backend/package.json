@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist/*",
-    "start": "sudo node ./dist/backend/src/index.js",
+    "start": "node ./dist/backend/src/index.js",
     "build": "npm-run-all clean build:backend",
     "build:backend": "tsc --alwaysStrict true",
     "start:dev": "nodemon",
@@ -28,7 +28,9 @@
   },
   "homepage": "https://github.com/Pingoin/pingoscope#readme",
   "dependencies": {
+    "@types/i2c-bus": "^5.1.0",
     "astronomical-algorithms": "^1.4.2",
+    "bno055-imu-node": "^1.4.0",
     "core-js": "^3.15.2",
     "geomag": "^1.0.0",
     "serialport": "^9.2.0",
