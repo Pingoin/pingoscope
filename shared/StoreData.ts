@@ -9,6 +9,7 @@ export interface StoreData {
   stellariumTarget: StellarPositionData;
   actualPosition: StellarPositionData;
   systemInformation:sysInfo;
+  gnssData:gnssData;
 }
 export interface sysInfo{
   cpuTemp:number;
@@ -18,4 +19,28 @@ export interface wsPost{
   key:string;
   action:"set"|"get";
   data:unknown;
+}
+export interface gnssData{
+  errors: number;
+  processed: number;
+  time?: Date;
+  lat?: number;
+  lon?: number;
+  alt?: number;
+  speed?: number;
+  track?: number;
+  satsActive?: number[];
+  satsVisible?: satData[];
+  fix?: string;
+  hdop?: number;
+  pdop?: number;
+  vdop?: number;
+}
+
+export interface satData{
+  prn: number;
+  elevation: number;
+  azimuth: number;
+  snr: number;
+  status: string;
 }

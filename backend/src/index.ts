@@ -35,7 +35,7 @@ class main {
         //const pos = await this.stepper.getPosStep();
         this.store.sensorPosition.horizontal={azimuth:position.position.azimuth,altitude:position.position.altitude};
         //console.log(`ausgelesen: ${pos}`);
-        console.log(position);
+        //console.log(position);
 
         //if (await this.stepper.targetReached()) {
             //this.stepper.setTargetStep(pos*-1);

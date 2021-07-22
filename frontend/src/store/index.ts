@@ -2,7 +2,7 @@ import { createModule, mutation, action, extractVuexModule, createProxy } from "
 import Vue from 'vue';
 import Vuex from 'vuex'
 import axios from "axios";
-import { StoreData, wsPost } from "../shared";
+import { satData, StoreData, wsPost } from "../shared";
 
 
 const VuexModule = createModule({
@@ -15,6 +15,22 @@ export class UserStore extends VuexModule {
     magneticDeclination: 0,
     longitude: 0,
     latitude: 0,
+    gnssData:{
+      errors: 0,
+      processed: 0,
+      time: new Date(),
+      lat: 0,
+      lon: 0,
+      alt: 0,
+      speed: 0,
+      track: 0,
+      satsActive:new Array<number>(),
+      satsVisible: new Array<satData>(),
+      fix: "3D",
+      hdop: 0,
+      pdop: 0,
+      vdop: 0
+    },
     sensorPosition: {
       equatorial: {
         declination: 0,

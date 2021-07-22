@@ -9,13 +9,14 @@
         vxm.user.storeData.latitude || 0,
         vxm.user.storeData.longitude || 0
       ]"
-      style="height: 500px; width: 100%"
+      style="height: 500px; width: 80%"
     >
       <l-tile-layer :url="url" :attribution="attribution" />
       <l-control-scale position="topright" :metric="true"></l-control-scale>
       <v-rotated-marker
         :lat-lng="[vxm.user.storeData.latitude, vxm.user.storeData.longitude]"
-        :rotationAngle="vxm.user.storeData.magneticDeclination"
+        :rotationAngle="vxm.user.storeData.sensorPosition.horizontal.azimuth"
+        :icon="icon"
       >
       </v-rotated-marker>
     </l-map>
@@ -57,6 +58,12 @@ export default class Position extends Vue {
   }
   url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   zoom = 7;
+  icon = icon({
+    iconUrl: "aircraft.svg",
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
   attribution =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
 }

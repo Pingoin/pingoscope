@@ -32,10 +32,17 @@
               ></v-list-item-title
             >
           </v-list-item>
-                    <v-list-item>
+          <v-list-item>
             <v-list-item-title
               ><router-link to="position" exact exact-active-class="active"
                 >Position</router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
+                    <v-list-item>
+            <v-list-item-title
+              ><router-link to="sensors" exact exact-active-class="active"
+                >Sensoren</router-link
               ></v-list-item-title
             >
           </v-list-item>

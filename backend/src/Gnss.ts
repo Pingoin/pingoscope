@@ -3,6 +3,8 @@ import Store from "./Store";
 import child from "child_process";
 import util from "util";
 import { GPIO, GPIOstate} from "./rpi-sysfs-io";
+import GPS, { Satellite } from "gps"
+import { gnssData } from "../../shared";
 
 const exec = util.promisify(child.exec);
 const SAT_SOURCE = {
@@ -18,9 +20,10 @@ export default class Gnss {
     private parser: serialport.parsers.Delimiter;
     private pps: GPIO=new GPIO(18,"r");
     private valid = false;
-    private lastDate = new Date("2021-06-03T13:00:00.000Z");
     private newTimestamp=false;
     private lastPPS:GPIOstate=0;
+    private gps=new GPS();
+    public sats:Satellite[]=[];
 
     constructor(store: Store) {
         this.store = store;
@@ -29,60 +32,32 @@ export default class Gnss {
             baudRate: 9600
         });
         this.parser = this.COMport.pipe(new serialport.parsers.Delimiter({ delimiter: [0x0D, 0x0A] }));
-        this.parser.on("data", this.parse.bind(this));
+        this.parser.on("data", this.updateGnss.bind(this));
         setInterval(this.checkPPS.bind(this),50);
-
+        setInterval(this.saveGps.bind(this),1000);
+    }
+    private async saveGps(){
+        this.sats=this.gps.state.satsVisible||[];
+        this.store.gnssData=this.gps.state as gnssData;
+        this.store.latitude = this.gps.state.lat||0;
+        this.store.longitude = this.gps.state.lon||0;
     }
 
+    private updateGnss(chunk:Buffer){
+        this.gps.update(chunk.toString());
+    }
     private async checkPPS(){
         const newPPS = await this.pps.read();
         if(newPPS>this.lastPPS){
             this.lastPPS=newPPS;            
             if (this.newTimestamp){
-                this.lastDate = new Date(this.lastDate.valueOf() + 1000);
-                const timeString = `${this.lastDate.getFullYear()}-${this.lastDate.getMonth() + 1}-${this.lastDate.getDate()}T${this.lastDate.getHours()}:${this.lastDate.getMinutes()}:${this.lastDate.getSeconds()}.000Z`;
+                const lastDate = new Date(this.gps.state.time.valueOf() + 1000);
+                const timeString = `${lastDate.getFullYear()}-${lastDate.getMonth() + 1}-${lastDate.getDate()}T${lastDate.getHours()}:${lastDate.getMinutes()}:${lastDate.getSeconds()}.000Z`;
                 exec(`sudo date --set="${timeString}"`).then(() => {console.log(new Date())});
                 this.newTimestamp=false;
                 }
         }
             this.lastPPS=newPPS;
         
-    }
-    private parse(buffer: Buffer) {
-        const msg = buffer.toString().slice(0, -3);
-        const tel = msg.split(",");
-        const mid = msg.slice(3, 6);
-        //console.log(mid)
-;        switch (mid) {
-            case "GSV":
-                const type = msg.slice(1, 3);
-                break;
-            case "RMC":
-                const dateString = `20${tel[9].slice(-2)}-${tel[9].slice(2, 4)}-${tel[9].slice(0, 2)} ${tel[1].slice(0, 2)}:${tel[1].slice(2, 4)}:${tel[1].slice(-5)}`
-                this.lastDate = new Date(dateString);
-                this.newTimestamp=true;
-                this.store.latitude = this.gpsDegreeToDeg(tel[3], tel[4]);
-                this.store.longitude = this.gpsDegreeToDeg(tel[5], tel[6]);
-                break;
-            case "VTG":
-                break;
-            case "GGA":
-                break;
-            case "GSA":
-                break;
-            case "GLL":
-                break;
-            default:
-                console.log(buffer.toString());
-                break;
-        }
-    }
-    private gpsDegreeToDeg(value: string, direction: string): number {
-        const val = parseFloat(value);
-        let result = Math.floor(val / 100) + (val % 60) / 60;
-        if (["W", "S"].includes(direction)) {
-            result *= -1
-        }
-        return result;
     }
 }

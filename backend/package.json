@@ -33,6 +33,7 @@
     "bno055-imu-node": "^1.4.0",
     "core-js": "^3.15.2",
     "geomag": "^1.0.0",
+    "gps": "^0.6.0",
     "serialport": "^9.2.0",
     "systeminformation": "^5.7.7",
     "threads": "^1.6.5",

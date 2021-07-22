@@ -1,10 +1,11 @@
 /** @format */
 
 import StellarPosition from "./StellarPosition";
-import {StoreData} from "./shared";
+import {satData, StoreData} from "./shared";
 import sysinfo from "systeminformation";
 import * as geomag from "geomag";
 import Api from "./Api";
+import { gnssData } from "../../shared";
 
 /**
  * central data store
@@ -14,6 +15,22 @@ export class Store implements StoreData {
     cpuTemp: 0
   };
   private api:Api;
+  public gnssData:gnssData={
+    errors: 0,
+    processed: 0,
+    time: new Date(),
+    lat: 0,
+    lon: 0,
+    alt: 0,
+    speed: 0,
+    track: 0,
+    satsActive:new Array<number>(),
+    satsVisible: new Array<satData>(),
+    fix: "3D",
+    hdop: 0,
+    pdop: 0,
+    vdop: 0
+  }
   public magneticDeclination = 0;
   private _longitude: number;
   public get longitude(): number {
@@ -45,8 +62,8 @@ export class Store implements StoreData {
   public actualPosition: StellarPosition = new StellarPosition("horizontal");
   constructor() {
     this.api = new Api(this);
-    this.latitude = 53 + 44 / 60 + 16.44 / 3600;
-    this.longitude = 14 + 2 / 60 + 40.92 / 3600;
+    this.latitude = 53.5953413;
+    this.longitude = 13.9806109;
 
     sysinfo.cpuTemperature().then(data => {
       this.systemInformation.cpuTemp = data.max;
@@ -60,6 +77,7 @@ export class Store implements StoreData {
       magneticDeclination: this.magneticDeclination,
       longitude: this.longitude,
       latitude: this.latitude,
+      gnssData:this.gnssData,
       sensorPosition: {
         horizontal: this.sensorPosition.horizontal,
         equatorial: this.sensorPosition.equatorial,
