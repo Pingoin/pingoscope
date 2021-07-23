@@ -1,6 +1,7 @@
 import FS,{promises as FSP} from "fs";
 import child from "child_process";
 import util from "util";
+import { delay } from "./helper";
 const exec = util.promisify(child.exec);
 
 //const pigpio = require('pigpio-client').pigpio({host: 'raspberryHostIP'});  
@@ -25,7 +26,6 @@ export class GPIO {
         .then(()=>{
             this.inited=true;
         })
-
     }
 
     async read(){
@@ -51,5 +51,9 @@ export class GPIO {
         return false;
 
     }
-
+    async waitForReady(){
+        while (!this.inited) {
+           await delay(100,null);
+        }
+    }
 }

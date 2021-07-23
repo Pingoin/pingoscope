@@ -34,6 +34,11 @@
       >y</status-unit
     >
     <h2>Alt/Az-Steuerung</h2>
+
+    <status-string caption="Motor Atltiude" :status="vxm.user.storeData.actualPosition.horizontalString.altitude"/>
+    <status-string caption="Motor Azimuth" :status="vxm.user.storeData.actualPosition.horizontalString.azimuth"/>
+        <status-string caption="Ziel Atltiude" :status="vxm.user.storeData.targetPosition.horizontalString.altitude"/>
+    <status-string caption="Ziel Azimuth" :status="vxm.user.storeData.targetPosition.horizontalString.azimuth"/>
   </div>
 </template>
 

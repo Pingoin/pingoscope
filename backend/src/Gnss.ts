@@ -2,7 +2,7 @@ import serialport from "serialport";
 import Store from "./Store";
 import child from "child_process";
 import util from "util";
-import { GPIO, GPIOstate} from "./rpi-sysfs-io";
+import { GPIO, GPIOstate} from "./GPIO";
 import GPS, { Satellite } from "gps"
 import { gnssData } from "../../shared";
 
