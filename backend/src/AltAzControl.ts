@@ -1,6 +1,21 @@
+import { Console } from "console";
 import { Stepper } from "./Stepper";
 import Store from "./Store";
 
+const stepsPerRevolveAz=200;
+const stepsPerRevolveAlt=200;
+
+const teethMotor=20;
+
+const diameterAzNeutralPhase=601;
+const diameterAltNeutralPhase=301;
+const toothWidth=2;
+
+const teethAz=Math.round(Math.PI*diameterAzNeutralPhase/toothWidth);
+const teethAlt=Math.round(Math.PI*diameterAltNeutralPhase/toothWidth);
+
+const unitPerStepAz=360/stepsPerRevolveAz*teethMotor/teethAz;
+const unitPerStepAlt=360/stepsPerRevolveAlt*teethMotor/teethAlt;
 export class AltAzControl {
     altitude: Stepper;
     azimuth: Stepper;
@@ -13,8 +28,8 @@ export class AltAzControl {
     }
 
     async init() {
-        this.altitude = new Stepper(5, 6, 13, false, 1.8 / 50);
-        this.azimuth = new Stepper(8, 9, 10, false, 1.8 / 50);
+        this.altitude = new Stepper(5, 6, 13, false,unitPerStepAlt);
+        this.azimuth = new Stepper(8, 9, 10, false, unitPerStepAz);
 
         await this.altitude.waitForReady();
         await this.azimuth.waitForReady();

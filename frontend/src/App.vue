@@ -39,10 +39,17 @@
               ></v-list-item-title
             >
           </v-list-item>
-                    <v-list-item>
+          <v-list-item>
             <v-list-item-title
               ><router-link to="sensors" exact exact-active-class="active"
                 >Sensoren</router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title
+              ><router-link to="control" exact exact-active-class="active"
+                >Steuerung</router-link
               ></v-list-item-title
             >
           </v-list-item>
@@ -61,7 +68,9 @@
     </v-navigation-drawer>
 
     <v-main>
-      <router-view />
+      <v-container>
+        <router-view />
+      </v-container>
     </v-main>
   </v-app>
 </template>

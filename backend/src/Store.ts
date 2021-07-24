@@ -19,8 +19,8 @@ export class Store implements StoreData {
     errors: 0,
     processed: 0,
     time: new Date(),
-    lat: 0,
-    lon: 0,
+    lat: 13.9807452,
+    lon: 53.5956198,
     alt: 0,
     speed: 0,
     track: 0,
@@ -82,25 +82,29 @@ export class Store implements StoreData {
         horizontal: this.sensorPosition.horizontal,
         equatorial: this.sensorPosition.equatorial,
         horizontalString: this.sensorPosition.horizontalString,
-        equatorialString: this.sensorPosition.equatorialString
+        equatorialString: this.sensorPosition.equatorialString,
+        type:this.sensorPosition.type
       },
       targetPosition: {
         horizontal: this.targetPosition.horizontal,
         equatorial: this.targetPosition.equatorial,
         horizontalString: this.targetPosition.horizontalString,
-        equatorialString: this.targetPosition.equatorialString
+        equatorialString: this.targetPosition.equatorialString,
+        type:this.targetPosition.type
       },
       actualPosition: {
         horizontal: this.actualPosition.horizontal,
         equatorial: this.actualPosition.equatorial,
         horizontalString: this.actualPosition.horizontalString,
-        equatorialString: this.actualPosition.equatorialString
+        equatorialString: this.actualPosition.equatorialString,
+        type:this.actualPosition.type
       },
       stellariumTarget: {
         horizontal: this.stellariumTarget.horizontal,
         equatorial: this.stellariumTarget.equatorial,
         horizontalString: this.stellariumTarget.horizontalString,
-        equatorialString: this.stellariumTarget.equatorialString
+        equatorialString: this.stellariumTarget.equatorialString,
+        type:this.stellariumTarget.type
       },
       systemInformation: this.systemInformation
     };

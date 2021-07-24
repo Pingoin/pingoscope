@@ -16,7 +16,7 @@ export interface sysInfo{
 
 }
 export interface wsPost{
-  key:string;
+  key:"StoreData"|"TargetType";
   action:"set"|"get";
   data:unknown;
 }

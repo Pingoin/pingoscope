@@ -8,7 +8,22 @@ import {
 export default class StellarPosition {
     private _vertical: number;
     private _horizontal: number;
-    private type: "horizontal" | "equatorial";
+    private _type: "horizontal" | "equatorial";
+  public get type(): "horizontal" | "equatorial" {
+    return this._type;
+  }
+  public set type(value: "horizontal" | "equatorial") {
+    if (this._type!==value){
+      if (this.type=="horizontal"){
+        this._vertical = this.horizontal.altitude;
+        this._horizontal = this.horizontal.azimuth;
+      }else{
+        this._vertical = this.equatorial.declination;
+        this._horizontal = this.equatorial.rightAscension;
+      }
+    }
+    this._type = value;
+  }
     longitude = 0;
     latitude = 0;
   

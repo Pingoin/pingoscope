@@ -14,4 +14,5 @@ export interface StellarPositionData {
     declination: string;
     rightAscension: string;
   };
+  type:"horizontal"|"equatorial";
 }
