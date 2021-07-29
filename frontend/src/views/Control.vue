@@ -33,7 +33,7 @@ export default class Position extends Vue {
     return vxm;
   }
 get followAxis(){
-    return vxm.user.storeData.targetPosition.type=="equatorial";
+    return vxm.user.targetType=="equatorial";
 }
 left(){
   alert("left");
@@ -48,7 +48,7 @@ down(){
   alert("down");
 }
 toggleAxis(){
-  alert("toggleAxis");
+  vxm.user.setTargetType(this.followAxis?"horizontal":"equatorial");
 }
 }
 </script>

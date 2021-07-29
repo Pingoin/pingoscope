@@ -67,8 +67,8 @@ export default class Api {
           this.store.targetPosition.type = mess.data as "horizontal" | "equatorial";
         }
         const message: wsPost = {
-          key: "StoreData",
-          data: this.store.simplify(),
+          key: "TargetType",
+          data: this.store.targetPosition.type,
           action: "set"
         };
         this.sendAll(JSON.stringify(message))

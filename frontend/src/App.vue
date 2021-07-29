@@ -53,6 +53,13 @@
               ></v-list-item-title
             >
           </v-list-item>
+                    <v-list-item>
+            <v-list-item-title
+              ><router-link to="calc" exact exact-active-class="active"
+                >Berechnungen</router-link
+              ></v-list-item-title
+            >
+          </v-list-item>
           <v-list-item>
             <v-list-item-title
               ><a href="/api/test" target="_blank">API Test</a>

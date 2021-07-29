@@ -44,7 +44,8 @@ export class UserStore extends VuexModule {
       equatorialString: {
         declination: "",
         rightAscension: ""
-      }
+      },
+      type:"horizontal"
     },
     targetPosition: {
       equatorial: {
@@ -59,7 +60,8 @@ export class UserStore extends VuexModule {
       equatorialString: {
         declination: "",
         rightAscension: ""
-      }
+      },
+      type:"horizontal"
     },
     actualPosition: {
       equatorial: {
@@ -74,7 +76,8 @@ export class UserStore extends VuexModule {
       equatorialString: {
         declination: "",
         rightAscension: ""
-      }
+      },
+      type:"horizontal"
     },
     stellariumTarget: {
       equatorial: {
@@ -89,7 +92,8 @@ export class UserStore extends VuexModule {
       equatorialString: {
         declination: "",
         rightAscension: ""
-      }
+      },
+      type:"equatorial"
     },
     systemInformation: {
       cpuTemp: 0
@@ -116,15 +120,31 @@ export class UserStore extends VuexModule {
 
   switch (tel.key) {
     case "StoreData":
-      console.log(tel.data);
       vxm.user.storeData=tel.data as StoreData;
       break;
-  
+    case "TargetType":
+      if (tel.action == "set" && ["horizontal", "equatorial"].includes(tel.data as string)) {
+        vxm.user.targetType = tel.data as "horizontal" | "equatorial";
+      }
     default:
       break;
   }
-}
 
+}
+get targetType(){
+  return this.storeData.targetPosition.type
+}
+set targetType(type:"horizontal" | "equatorial"){
+  this.storeData.targetPosition.type=type;
+}
+@action async setTargetType(type:"horizontal" | "equatorial"){
+  const message: wsPost = {
+    key: "TargetType",
+    data: type,
+    action: "set"
+  };
+  this.wsClient.send(JSON.stringify(message));
+}
 
 }
 

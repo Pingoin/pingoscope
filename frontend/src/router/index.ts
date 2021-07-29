@@ -29,6 +29,11 @@ const routes: Array<RouteConfig> = [
     path: '/control',
     name: 'Control',
     component: () => import('../views/Control.vue')
+  },
+  {
+    path: '/calc',
+    name: 'Calc',
+    component: () => import('../views/Calculations.vue')
   }
 ]
 
