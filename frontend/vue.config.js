@@ -6,7 +6,7 @@ module.exports = {
   devServer: {
     proxy: {
         "^/api": {
-            target: "http://localhost:8080"
+            target: "http://localhost:8080/api"
         },
         "^/docs": {
             target: "http://localhost:8080"

@@ -1,8 +1,8 @@
 import { createModule, mutation, action, extractVuexModule, createProxy } from "vuex-class-component";
 import Vue from 'vue';
 import Vuex from 'vuex'
-import axios from "axios";
-import { satData, StoreData, wsPost } from "../shared";
+import { satData, StoreData } from "../shared";
+import { io } from "socket.io-client";
 
 
 const VuexModule = createModule({
@@ -15,7 +15,7 @@ export class UserStore extends VuexModule {
     magneticDeclination: 0,
     longitude: 0,
     latitude: 0,
-    gnssData:{
+    gnssData: {
       errors: 0,
       processed: 0,
       time: new Date(),
@@ -24,7 +24,7 @@ export class UserStore extends VuexModule {
       alt: 0,
       speed: 0,
       track: 0,
-      satsActive:new Array<number>(),
+      satsActive: new Array<number>(),
       satsVisible: new Array<satData>(),
       fix: "3D",
       hdop: 0,
@@ -45,7 +45,7 @@ export class UserStore extends VuexModule {
         declination: "",
         rightAscension: ""
       },
-      type:"horizontal"
+      type: "horizontal"
     },
     targetPosition: {
       equatorial: {
@@ -61,7 +61,7 @@ export class UserStore extends VuexModule {
         declination: "",
         rightAscension: ""
       },
-      type:"horizontal"
+      type: "horizontal"
     },
     actualPosition: {
       equatorial: {
@@ -77,7 +77,7 @@ export class UserStore extends VuexModule {
         declination: "",
         rightAscension: ""
       },
-      type:"horizontal"
+      type: "horizontal"
     },
     stellariumTarget: {
       equatorial: {
@@ -93,61 +93,56 @@ export class UserStore extends VuexModule {
         declination: "",
         rightAscension: ""
       },
-      type:"equatorial"
+      type: "equatorial"
     },
     systemInformation: {
       cpuTemp: 0
     },
   }
-  wsClient= new WebSocket("ws://192.168.178.54:8080/");
-  @action async initWS() {
-    // Log messages from the server
-    this.wsClient.onmessage = vxm.user.handleWS;
-  }
-
-  @action async fetchData(){
-    const message:wsPost={
-      key:"StoreData",
-      action:"get",
-      data:""
-    }
-    this.wsClient.send(JSON.stringify(message));
-  }
-
- @action async handleWS(event:MessageEvent<any>){
-  const tel=JSON.parse(event.data) as wsPost;
-  console.log(tel.action +" "+ tel.key);
-
-  switch (tel.key) {
-    case "StoreData":
-      vxm.user.storeData=tel.data as StoreData;
-      break;
-    case "TargetType":
-      if (tel.action == "set" && ["horizontal", "equatorial"].includes(tel.data as string)) {
-        vxm.user.targetType = tel.data as "horizontal" | "equatorial";
+  image: string = "";
+  socket = io({
+    path:"/api",
+    transports: ["websocket", "polling"]
+  });
+  @action async initWS() { 
+    this.socket.onAny((event,...args)=>{
+      switch (event) {
+        case "StoreData":
+          vxm.user.storeData = args[0] as StoreData;
+          break;
+        case "image":
+          vxm.user.image = args[0] as string;
+        break;
+        case "TargetType":
+          if (["horizontal", "equatorial"].includes(args[0] as string)) {
+            vxm.user.targetType = args[0] as "horizontal" | "equatorial";
+          } 
+        break;
+        default:
+          break;
       }
-    default:
-      break;
+    })
+    this.socket.on("connect",()=>{
+      console.log("Connection, ",this.socket.id)
+    })
+    this.socket.on("disconnect", () => {
+      console.log(this.socket.id); // undefined
+    });
+  } 
+
+  @action async fetchData() {
+    this.socket.emit("getStoreData");
   }
-
+  get targetType() {
+    return this.storeData.targetPosition.type
+  }
+  set targetType(type: "horizontal" | "equatorial") {
+    this.storeData.targetPosition.type = type;
+  }
+  @action async setTargetType(type: "horizontal" | "equatorial") {
+    this.socket.emit("setTargetType", type);
+  }
 }
-get targetType(){
-  return this.storeData.targetPosition.type
-}
-set targetType(type:"horizontal" | "equatorial"){
-  this.storeData.targetPosition.type=type;
-}
-@action async setTargetType(type:"horizontal" | "equatorial"){
-  const message: wsPost = {
-    key: "TargetType",
-    data: type,
-    action: "set"
-  };
-  this.wsClient.send(JSON.stringify(message));
-}
-
-}
-
 
 export const store = new Vuex.Store({
   modules: {

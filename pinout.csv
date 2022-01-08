@@ -1,0 +1,16 @@
+pin BCM," pin Header"," function"
+4,7,ENb
+17,11,Mode1 A
+27,13,Mode2 B
+22,15,Mode1 B
+13,33,Dir A
+19,35,Step A
+18,12,Stab B
+24,18,Dir B
+12,32,Ena
+16,36,Mode0 A
+20,38,Mode2 A
+21,40,Mode0 B
+25,22,scl
+5,29,sda
+23,16,pps

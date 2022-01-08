@@ -18,7 +18,6 @@ export default class Gnss {
     private store: Store;
     private COMport: serialport;
     private parser: serialport.parsers.Delimiter;
-    private pps: GPIO=new GPIO(18,"r");
     private valid = false;
     private newTimestamp=false;
     private lastPPS:GPIOstate=0;
@@ -33,7 +32,7 @@ export default class Gnss {
         });
         this.parser = this.COMport.pipe(new serialport.parsers.Delimiter({ delimiter: [0x0D, 0x0A] }));
         this.parser.on("data", this.updateGnss.bind(this));
-        setInterval(this.checkPPS.bind(this),50);
+        setInterval(this.checkPPS.bind(this),100);
         setInterval(this.saveGps.bind(this),1000);
     }
     private async saveGps(){
@@ -46,10 +45,7 @@ export default class Gnss {
     private updateGnss(chunk:Buffer){
         this.gps.update(chunk.toString());
     }
-    private async checkPPS(){
-        const newPPS = await this.pps.read();
-        if(newPPS>this.lastPPS){
-            this.lastPPS=newPPS;            
+    private async checkPPS(){         
             if (this.newTimestamp){
                 const lastDate = new Date(this.gps.state.time.valueOf() + 1000);
                 const timeString = `${lastDate.getFullYear()}-${lastDate.getMonth() + 1}-${lastDate.getDate()}T${lastDate.getHours()}:${lastDate.getMinutes()}:${lastDate.getSeconds()}.000Z`;
@@ -57,7 +53,5 @@ export default class Gnss {
                 this.newTimestamp=false;
                 }
         }
-            this.lastPPS=newPPS;
         
-    }
 }

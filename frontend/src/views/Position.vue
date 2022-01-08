@@ -9,7 +9,7 @@
         vxm.user.storeData.latitude || 0,
         vxm.user.storeData.longitude || 0
       ]"
-      style="height: 500px; width: 80%"
+      style="z-index: 0; height: 500px; width: 80%"
     >
       <l-tile-layer :url="url" :attribution="attribution" />
       <l-control-scale position="topright" :metric="true"></l-control-scale>

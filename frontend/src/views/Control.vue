@@ -17,6 +17,7 @@
         <td></td>
       </tr>
     </table>
+    <img v-bind:src="'data:image/jpg;base64,'+ vxm.user.image" />
   </div>
 </template>
 

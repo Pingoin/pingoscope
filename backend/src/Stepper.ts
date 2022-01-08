@@ -15,10 +15,10 @@ export class Stepper {
     /** Steps pro Sekunde */
     private speed = 1000;
     constructor(stepPin: PinNumber, dirPin: PinNumber, enablePin: PinNumber, changeDir: boolean, unitPerStep: number = 1.8) {
-        this.direction = new GPIO(dirPin, "w");
+        this.direction = new GPIO(dirPin, "out");
         this.uPS = unitPerStep;
-        this.step = new GPIO(stepPin, "w");
-        this.enable = new GPIO(enablePin, "w");
+        this.step = new GPIO(stepPin, "out");
+        this.enable = new GPIO(enablePin, "out");
         this.dirModify = changeDir;
         this.waitForReady().then(()=>{this.cyclic100ms()})
     }
@@ -92,7 +92,7 @@ export class Stepper {
      */
     async steps(count: number, duration: number = 10) {
         for (let index = 0; index < count; index++) {
-            await this.step.trigger(duration, 1);
+            //await this.step.trigger(duration, 1);
         }
     }
     async waitForReady(){
