@@ -1,20 +1,26 @@
 package api
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Pingoin/pingoscope/internal/altazdriver"
 	"github.com/Pingoin/pingoscope/pkg/position"
-	"github.com/Pingoin/pingoscope/pkg/stepper"
 	"github.com/gorilla/mux"
 )
 
-var azimuth *stepper.Stepper
+var altAzDriver *altazdriver.AltAzDriver
 var sensorPosition *position.Position
+
+//go:generate cp -r ../../frontend/dist frontend
+//go:embed frontend
+var frontend embed.FS
 
 type Article struct {
 	Id      string `json:"Id"`
@@ -25,29 +31,38 @@ type Article struct {
 
 var Articles []Article
 
-func HandleRequests(azimuthNew *stepper.Stepper, sensPosNew *position.Position) {
-	azimuth = azimuthNew
+func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, sensPosNew *position.Position) {
+	altAzDriver = altazdriverNew
 	sensorPosition = sensPosNew
+
+	stripped, err := fs.Sub(frontend, "frontend/dist")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	frontendFS := http.FileServer(http.FS(stripped))
 	Articles = []Article{
 		{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
 		{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
 	}
 	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", homePage)
+	myRouter.PathPrefix("/").Handler(frontendFS)
 	myRouter.HandleFunc("/target", setTarget).Methods("POST")
+	myRouter.HandleFunc("/driver", getDriver)
+	myRouter.HandleFunc("/sensor", getSensor)
 	myRouter.HandleFunc("/articles", returnAllArticles)
 	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
 	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
 	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
+	log.Fatal(http.ListenAndServe(port, myRouter))
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("Endpoint Hit: homePage")
+func getDriver(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(altAzDriver.GetData())
+}
+func getSensor(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(sensorPosition)
 }
-
 func returnAllArticles(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Endpoint Hit: returnAllArticles")
 	json.NewEncoder(w).Encode(Articles)
@@ -60,7 +75,7 @@ func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	azimuth.SetMaxSpeed(u)
+	altAzDriver.Azimuth.SetMaxSpeed(u)
 	for _, article := range Articles {
 		if article.Id == key {
 			json.NewEncoder(w).Encode(article)
@@ -101,7 +116,7 @@ func setTarget(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var position position.Position
 	json.Unmarshal(reqBody, &position)
-	azimuth.SetTarget(float64(position.Azimuth))
+	altAzDriver.Azimuth.SetTarget(float64(position.Azimuth))
 
 	fmt.Printf("bla: %v", position)
 	json.NewEncoder(w).Encode(position)

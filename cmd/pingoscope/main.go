@@ -2,18 +2,18 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-
 	"math"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/Pingoin/pingoscope/internal/altazdriver"
 	"github.com/Pingoin/pingoscope/internal/api"
 	"github.com/Pingoin/pingoscope/internal/imu"
 	"github.com/Pingoin/pingoscope/pkg/position"
-	"github.com/Pingoin/pingoscope/pkg/stepper"
 
 	"github.com/soniakeys/meeus/v3/coord"
 	"github.com/soniakeys/meeus/v3/julian"
@@ -23,11 +23,11 @@ import (
 	"github.com/stianeikeland/go-rpio/v4"
 )
 
-// Article - Our struct for all articles
-
-var azimuth stepper.Stepper
-
 func main() {
+	var port int
+	flag.IntVar(&port, "port", 8080, "The port to listen on")
+	flag.Parse()
+
 	sensorPosition := position.Position{Azimuth: 0, Altitude: 0}
 
 	// Example 13.b, p. 95.
@@ -45,18 +45,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	azStep := rpio.Pin(3)
-	azStep.Output()
-	azDir := rpio.Pin(4)
-	azDir.Output()
-	azEna := rpio.Pin(5)
-	azEna.Output()
-	azimuth = stepper.New(azStep, azDir, azEna, 1, 200, 10)
-	azimuth.SetTarget(5)
 
-	go azimuth.Loop()
-	fmt.Printf("azimuth: %v\n", azimuth.GetData())
-	go api.HandleRequests(&azimuth, &sensorPosition)
+	//azStep dir sollte 19 sein, nut test auf 3
+	driver := altazdriver.NewAltAzDriver(3, 13, 12, 18, 24, 4)
+	go driver.Altitude.Loop()
+	go driver.Azimuth.Loop()
+	fmt.Printf("azimuth: %v\n", driver.Azimuth.GetData())
+	go api.HandleRequests(fmt.Sprintf(":%d", port), &driver, &sensorPosition)
 	go imu.Init(&sensorPosition)
 
 	signals := make(chan os.Signal, 1)
