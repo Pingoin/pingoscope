@@ -14,6 +14,7 @@ import (
 )
 
 var azimuth *stepper.Stepper
+var sensorPosition *position.Position
 
 type Article struct {
 	Id      string `json:"Id"`
@@ -24,8 +25,9 @@ type Article struct {
 
 var Articles []Article
 
-func HandleRequests(azimuthNew *stepper.Stepper) {
+func HandleRequests(azimuthNew *stepper.Stepper, sensPosNew *position.Position) {
 	azimuth = azimuthNew
+	sensorPosition = sensPosNew
 	Articles = []Article{
 		{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
 		{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
@@ -43,7 +45,7 @@ func HandleRequests(azimuthNew *stepper.Stepper) {
 func homePage(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Endpoint Hit: homePage")
-	json.NewEncoder(w).Encode(azimuth.GetData())
+	json.NewEncoder(w).Encode(sensorPosition)
 }
 
 func returnAllArticles(w http.ResponseWriter, r *http.Request) {
