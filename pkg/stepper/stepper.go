@@ -3,8 +3,6 @@ package stepper
 import (
 	"math"
 	"time"
-
-	"github.com/stianeikeland/go-rpio/v4"
 )
 
 type StepperData struct {
@@ -22,10 +20,15 @@ type StepperData struct {
 	CurrentSpeed float64 `json:"currentSpeed"`
 }
 
+type OutputPin interface {
+	Low()
+	High()
+}
+
 type Stepper struct {
-	step rpio.Pin
-	dir  rpio.Pin
-	ena  rpio.Pin
+	step OutputPin
+	dir  OutputPin
+	ena  OutputPin
 	// units per step
 	resolution float64
 	position   float64
@@ -42,15 +45,8 @@ type Stepper struct {
 /*
 
  */
-func New(stepNr uint8, dirNr uint8, enaNr uint8, resolution float64, maxSpeed float64, maxAccel float64) Stepper {
-	err := rpio.Open()
-	if err != nil {
-		panic(err)
-	}
-	stepper := Stepper{rpio.Pin(stepNr), rpio.Pin(dirNr), rpio.Pin(enaNr), resolution, 0, 0, maxSpeed, maxAccel, 1e6, 20}
-	stepper.dir.Output()
-	stepper.step.Output()
-	stepper.ena.Output()
+func New(step OutputPin, dir OutputPin, ena OutputPin, resolution float64, maxSpeed float64, maxAccel float64) Stepper {
+	stepper := Stepper{step, dir, ena, resolution, 0, 0, maxSpeed, maxAccel, 1e6, 20}
 	stepper.dir.Low()
 	stepper.step.Low()
 	stepper.ena.Low()

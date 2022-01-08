@@ -6,8 +6,8 @@ After=network-online.target
 
 [Service]
 Restart=on-failure
-WorkingDirectory=/opt/pingoscope/backend/dist/
-ExecStart=/usr/bin/node /opt/pingoscope/backend/dist/backend/src/index.js
+WorkingDirectory=/opt/pingoscope
+ExecStart=/opt/pingoscope/pingoscope
 
 [Install]
 WantedBy=multi-user.target

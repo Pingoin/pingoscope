@@ -3,16 +3,15 @@ package main
 
 import (
 	"fmt"
-	"log"
+
 	"math"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/Pingoin/pingoscope/internal/api"
 	"github.com/Pingoin/pingoscope/pkg/stepper"
-	"github.com/gorilla/mux"
 	"github.com/kpeu3i/bno055"
 	"github.com/soniakeys/meeus/v3/coord"
 	"github.com/soniakeys/meeus/v3/julian"
@@ -23,31 +22,8 @@ import (
 )
 
 // Article - Our struct for all articles
-type Article struct {
-	Id      string `json:"Id"`
-	Title   string `json:"Title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-}
 
-type Postion struct {
-	Altitude float32 `json:"alt"`
-	Azimuth  float32 `json:"az"`
-}
-
-var Articles []Article
 var azimuth stepper.Stepper
-
-func handleRequests() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/target", setTarget).Methods("POST")
-	myRouter.HandleFunc("/articles", returnAllArticles)
-	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
-	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
-	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
-	log.Fatal(http.ListenAndServe(":10000", myRouter))
-}
 
 func main() {
 	// Example 13.b, p. 95.
@@ -61,19 +37,22 @@ func main() {
 	fmt.Printf("A = %+.3j\n", sexa.FmtAngle(A+math.Pi))
 	fmt.Printf("h = %+.3j\n", sexa.FmtAngle(h))
 
-	Articles = []Article{
-		{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
-		{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
-	}
 	err := rpio.Open()
 	if err != nil {
 		panic(err)
 	}
-	azimuth = stepper.New(3, 4, 5, 1, 200, 10)
+	azStep := rpio.Pin(3)
+	azStep.Output()
+	azDir := rpio.Pin(4)
+	azDir.Output()
+	azEna := rpio.Pin(5)
+	azEna.Output()
+	azimuth = stepper.New(azStep, azDir, azEna, 1, 200, 10)
 	azimuth.SetTarget(5)
+
 	go azimuth.Loop()
 	fmt.Printf("azimuth: %v\n", azimuth.GetData())
-	go handleRequests()
+	go api.HandleRequests(&azimuth)
 	sensor, err := bno055.NewSensor(0x29, 3)
 	if err != nil {
 		panic(err)
@@ -164,14 +143,14 @@ func main() {
 
 		time.Sleep(100 * time.Millisecond)
 	}
+
 	fmt.Printf("\n*** Done! Calibration offsets: %v\n", calibrationOffsets)
 	for {
 		select {
 		case <-signals:
+			rpio.Close()
 			err := sensor.Close()
-			if err != nil {
-				panic(err)
-			}
+			panic(err)
 		default:
 			vector, err := sensor.Euler()
 			if err != nil {

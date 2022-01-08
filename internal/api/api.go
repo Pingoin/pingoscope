@@ -1,14 +1,44 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/Pingoin/pingoscope/pkg/position"
+	"github.com/Pingoin/pingoscope/pkg/stepper"
 	"github.com/gorilla/mux"
 )
+
+var azimuth *stepper.Stepper
+
+type Article struct {
+	Id      string `json:"Id"`
+	Title   string `json:"Title"`
+	Desc    string `json:"desc"`
+	Content string `json:"content"`
+}
+
+var Articles []Article
+
+func HandleRequests(azimuthNew *stepper.Stepper) {
+	azimuth = azimuthNew
+	Articles = []Article{
+		{Id: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
+		{Id: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
+	}
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/target", setTarget).Methods("POST")
+	myRouter.HandleFunc("/articles", returnAllArticles)
+	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
+	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
+	myRouter.HandleFunc("/article/{id}", returnSingleArticle)
+	log.Fatal(http.ListenAndServe(":10000", myRouter))
+}
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 
@@ -67,7 +97,7 @@ func setTarget(w http.ResponseWriter, r *http.Request) {
 	// unmarshal this into a new Article struct
 	// append this to our Articles array.
 	reqBody, _ := ioutil.ReadAll(r.Body)
-	var position Postion
+	var position position.Position
 	json.Unmarshal(reqBody, &position)
 	azimuth.SetTarget(float64(position.Azimuth))
 
