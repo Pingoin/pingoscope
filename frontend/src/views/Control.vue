@@ -34,7 +34,7 @@ export default class Position extends Vue {
     return vxm;
   }
 get followAxis(){
-    return vxm.user.targetType=="equatorial";
+    return false;
 }
 left(){
   alert("left");

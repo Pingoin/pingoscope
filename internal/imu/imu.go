@@ -3,13 +3,13 @@ package imu
 import (
 	"time"
 
-	"github.com/Pingoin/pingoscope/pkg/position"
+	"github.com/Pingoin/pingoscope/internal/store"
 	"github.com/kpeu3i/bno055"
 )
 
 var sensor *bno055.Sensor
 
-func Init(sensorPosition *position.Position) {
+func Init(storeData *store.Store) {
 	var err error
 	sensor, err = bno055.NewSensor(0x29, 3)
 	if err != nil {
@@ -31,8 +31,8 @@ func Init(sensorPosition *position.Position) {
 		if err != nil {
 			panic(err)
 		}
-		sensorPosition.Altitude = vector.Z
-		sensorPosition.Azimuth = vector.X
+		storeData.Data.SensorPosition.Horizontal.Altitude = float64(vector.Z)
+		storeData.Data.SensorPosition.Horizontal.Azimuth = float64(vector.X)
 		//fmt.Printf("\r*** Euler angles: x=%5.3f, y=%5.3f, z=%5.3f", vector.X, vector.Y, vector.Z)
 		time.Sleep(100 * time.Millisecond)
 	}

@@ -67,7 +67,7 @@
           </v-list-item>
           <v-list-item>
             <v-list-item-title
-              ><a href="/api/data" target="_blank">API Store</a>
+              ><a href="/api/store" target="_blank">API Store</a>
             </v-list-item-title>
           </v-list-item>
         </v-list-item-group>

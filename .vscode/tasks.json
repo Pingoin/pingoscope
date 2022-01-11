@@ -11,9 +11,28 @@
             }
         },
         {
-            "label": "Docs Driver",
+            "label": "Run Driver",
             "type": "shell",
-            "command": "godoc -http=0.0.0.0:6060",
+            "command": "gow run ./cmd/pingoscope",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "serve frontend",
+            "type": "shell",
+            "command": "cd frontend && npm run serve",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "build frontend",
+            "type": "shell",
+            "command": "cd frontend && npm run build",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"

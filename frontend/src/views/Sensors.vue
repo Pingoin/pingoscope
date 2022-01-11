@@ -3,11 +3,11 @@
     <h2>Lagesensor</h2>
     <status-string
       caption="Azimut"
-      :status="vxm.user.storeData.sensorPosition.horizontalString.azimuth"
+      :status="vxm.user.storeData.sensorPosition.horizontal.azimuth.toString()"
     ></status-string>
     <status-string
       caption="Altitude"
-      :status="vxm.user.storeData.sensorPosition.horizontalString.altitude"
+      :status="vxm.user.storeData.sensorPosition.horizontal.altitude.toString()"
     ></status-string>
     <h2>GPS</h2>
     <status-number
@@ -35,10 +35,10 @@
     >
     <h2>Alt/Az-Steuerung</h2>
 
-    <status-string caption="Motor Atltiude" :status="vxm.user.storeData.actualPosition.horizontalString.altitude"/>
-    <status-string caption="Motor Azimuth" :status="vxm.user.storeData.actualPosition.horizontalString.azimuth"/>
-        <status-string caption="Ziel Atltiude" :status="vxm.user.storeData.targetPosition.horizontalString.altitude"/>
-    <status-string caption="Ziel Azimuth" :status="vxm.user.storeData.targetPosition.horizontalString.azimuth"/>
+    <status-string caption="Motor Atltiude" :status="vxm.user.storeData.actualPosition.horizontal.altitude.toString()"/>
+    <status-string caption="Motor Azimuth" :status="vxm.user.storeData.actualPosition.horizontal.azimuth.toString()"/>
+        <status-string caption="Ziel Atltiude" :status="vxm.user.storeData.targetPosition.horizontal.altitude.toString()"/>
+    <status-string caption="Ziel Azimuth" :status="vxm.user.storeData.targetPosition.horizontal.azimuth.toString()"/>
   </div>
 </template>
 

@@ -9,10 +9,4 @@ export interface StellarPositionData {
     altitude: number;
     azimuth: number;
   };
-  horizontalString: { azimuth: string; altitude: string };
-  equatorialString: {
-    declination: string;
-    rightAscension: string;
-  };
-  type:"horizontal"|"equatorial";
 }

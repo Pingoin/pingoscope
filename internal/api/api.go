@@ -4,17 +4,18 @@ import (
 	"net/http"
 
 	"github.com/Pingoin/pingoscope/internal/altazdriver"
+	"github.com/Pingoin/pingoscope/internal/store"
 	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 var altAzDriver *altazdriver.AltAzDriver
-var sensorPosition *position.Position
+var storeFiles *store.Store
 
-func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, sensPosNew *position.Position) {
+func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, storeNew *store.Store) {
 	altAzDriver = altazdriverNew
-	sensorPosition = sensPosNew
+	storeFiles = storeNew
 
 	// Echo instance
 	e := echo.New()
@@ -27,9 +28,10 @@ func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, sensPo
 
 	// Routes
 	e.Static("/", "frontend/dist")
-	e.POST("/target", setTarget)
-	e.GET("/driver", getDriver)
-	e.GET("/sensor", getSensor)
+	e.POST("/api/target", setTarget)
+	e.GET("/api/driver", getDriver)
+	e.GET("/api/sensor", getSensor)
+	e.GET("/api/store", getStore)
 
 	e.Logger.Fatal(e.Start(port))
 }
@@ -38,7 +40,12 @@ func getDriver(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, altAzDriver.GetData())
 }
 func getSensor(c echo.Context) error {
-	return c.JSON(http.StatusAccepted, sensorPosition)
+	return c.JSON(http.StatusAccepted, storeFiles.Data.SensorPosition)
+}
+
+func getStore(c echo.Context) error {
+	altAzDriver.GetData()
+	return c.JSON(http.StatusAccepted, storeFiles.Data)
 }
 
 func setTarget(c echo.Context) error {
@@ -47,5 +54,6 @@ func setTarget(c echo.Context) error {
 		return err
 	}
 	altAzDriver.Azimuth.SetTarget(float64(position.Azimuth))
+	altAzDriver.Altitude.SetTarget(float64(position.Altitude))
 	return c.JSON(http.StatusCreated, position)
 }

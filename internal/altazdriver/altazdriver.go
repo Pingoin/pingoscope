@@ -1,20 +1,22 @@
 package altazdriver
 
 import (
+	"github.com/Pingoin/pingoscope/internal/store"
 	"github.com/Pingoin/pingoscope/pkg/stepper"
 	"github.com/stianeikeland/go-rpio/v4"
 )
 
 type AltAzDriver struct {
-	Altitude stepper.Stepper
-	Azimuth  stepper.Stepper
+	Altitude  stepper.Stepper
+	Azimuth   stepper.Stepper
+	storeData *store.Store
 }
 type AltAzDriverData struct {
 	Altitude stepper.StepperData
 	Azimuth  stepper.StepperData
 }
 
-func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr uint8) AltAzDriver {
+func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr uint8, storeNew *store.Store) AltAzDriver {
 	err := rpio.Open()
 	if err != nil {
 		panic(err)
@@ -37,12 +39,15 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	altitude := stepper.New(azStep, azDir, azEna, 1, 200, 10)
 	altitude.SetTarget(5)
 	return AltAzDriver{
-		Altitude: altitude,
-		Azimuth:  azimuth,
+		Altitude:  altitude,
+		Azimuth:   azimuth,
+		storeData: storeNew,
 	}
 }
 
 func (driver *AltAzDriver) GetData() AltAzDriverData {
+	driver.storeData.Data.ActualPosition.Horizontal.Altitude = driver.Altitude.GetData().Position
+	driver.storeData.Data.ActualPosition.Horizontal.Azimuth = driver.Azimuth.GetData().Position
 	return AltAzDriverData{
 		Altitude: driver.Altitude.GetData(),
 		Azimuth:  driver.Azimuth.GetData(),

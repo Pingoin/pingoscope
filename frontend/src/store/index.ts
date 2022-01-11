@@ -1,8 +1,8 @@
 import { createModule, mutation, action, extractVuexModule, createProxy } from "vuex-class-component";
 import Vue from 'vue';
-import Vuex from 'vuex'
+import Vuex from 'vuex';
+import axios from "axios";
 import { satData, StoreData } from "../shared";
-import { io } from "socket.io-client";
 
 
 const VuexModule = createModule({
@@ -40,12 +40,6 @@ export class UserStore extends VuexModule {
         altitude: 0,
         azimuth: 0
       },
-      horizontalString: { azimuth: "", altitude: "" },
-      equatorialString: {
-        declination: "",
-        rightAscension: ""
-      },
-      type: "horizontal"
     },
     targetPosition: {
       equatorial: {
@@ -56,12 +50,6 @@ export class UserStore extends VuexModule {
         altitude: 0,
         azimuth: 0
       },
-      horizontalString: { azimuth: "", altitude: "" },
-      equatorialString: {
-        declination: "",
-        rightAscension: ""
-      },
-      type: "horizontal"
     },
     actualPosition: {
       equatorial: {
@@ -72,12 +60,6 @@ export class UserStore extends VuexModule {
         altitude: 0,
         azimuth: 0
       },
-      horizontalString: { azimuth: "", altitude: "" },
-      equatorialString: {
-        declination: "",
-        rightAscension: ""
-      },
-      type: "horizontal"
     },
     stellariumTarget: {
       equatorial: {
@@ -88,59 +70,22 @@ export class UserStore extends VuexModule {
         altitude: 0,
         azimuth: 0
       },
-      horizontalString: { azimuth: "", altitude: "" },
-      equatorialString: {
-        declination: "",
-        rightAscension: ""
-      },
-      type: "equatorial"
     },
     systemInformation: {
       cpuTemp: 0
     },
   }
   image: string = "";
-  socket = io({
-    path:"/api",
-    transports: ["websocket", "polling"]
-  });
-  @action async initWS() { 
-    this.socket.onAny((event,...args)=>{
-      switch (event) {
-        case "StoreData":
-          vxm.user.storeData = args[0] as StoreData;
-          break;
-        case "image":
-          vxm.user.image = args[0] as string;
-        break;
-        case "TargetType":
-          if (["horizontal", "equatorial"].includes(args[0] as string)) {
-            vxm.user.targetType = args[0] as "horizontal" | "equatorial";
-          } 
-        break;
-        default:
-          break;
-      }
-    })
-    this.socket.on("connect",()=>{
-      console.log("Connection, ",this.socket.id)
-    })
-    this.socket.on("disconnect", () => {
-      console.log(this.socket.id); // undefined
-    });
+
+  @action async initWS() {
+    this.storeData=(await axios.get<StoreData>("/api/store")).data;
   } 
 
   @action async fetchData() {
-    this.socket.emit("getStoreData");
-  }
-  get targetType() {
-    return this.storeData.targetPosition.type
-  }
-  set targetType(type: "horizontal" | "equatorial") {
-    this.storeData.targetPosition.type = type;
+    this.storeData=(await axios.get<StoreData>("/api/store")).data;
   }
   @action async setTargetType(type: "horizontal" | "equatorial") {
-    this.socket.emit("setTargetType", type);
+    
   }
 }
 
