@@ -7,12 +7,17 @@ import (
 )
 
 type Store struct {
-	Data StoreData
+	data               StoreData
+	SensorPosition     position.StellarPosition
+	ActualPosition     position.StellarPosition
+	StellariumPosition position.StellarPosition
+	GroundPosition     position.GroundPosition
 }
 
-func NewStore() Store {
-	return Store{
-		Data: StoreData{
+func NewStore(ground position.GroundPosition) Store {
+	az := position.AltAzPos{Altitude: 0, Azimuth: 0}
+	store := Store{
+		data: StoreData{
 			MagneticDeclination: 0,
 			Longitude:           1,
 			Latitude:            1,
@@ -52,5 +57,21 @@ func NewStore() Store {
 				Vdop:        0,
 			},
 		},
+		SensorPosition:     position.NewStellarPositionAltAz(az, &ground),
+		ActualPosition:     position.NewStellarPositionAltAz(az, &ground),
+		StellariumPosition: position.NewStellarPositionAltAz(az, &ground),
+		GroundPosition:     ground,
 	}
+
+	store.SensorPosition.SetGround(&store.GroundPosition)
+	store.ActualPosition.SetGround(&store.GroundPosition)
+	store.StellariumPosition.SetGround(&store.GroundPosition)
+	return store
+}
+
+func (store *Store) GetData() StoreData {
+	store.data.SensorPosition = store.SensorPosition.GetData()
+	store.data.ActualPosition = store.ActualPosition.GetData()
+	store.data.StellariumTarget = store.StellariumPosition.GetData()
+	return store.data
 }

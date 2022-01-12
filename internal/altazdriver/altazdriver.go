@@ -2,7 +2,9 @@ package altazdriver
 
 import (
 	"github.com/Pingoin/pingoscope/internal/store"
+	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/Pingoin/pingoscope/pkg/stepper"
+	"github.com/soniakeys/unit"
 	"github.com/stianeikeland/go-rpio/v4"
 )
 
@@ -46,8 +48,13 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 }
 
 func (driver *AltAzDriver) GetData() AltAzDriverData {
-	driver.storeData.Data.ActualPosition.Horizontal.Altitude = driver.Altitude.GetData().Position
-	driver.storeData.Data.ActualPosition.Horizontal.Azimuth = driver.Azimuth.GetData().Position
+
+	altAz := position.AltAzPos{
+		Altitude: unit.AngleFromDeg(driver.Altitude.GetData().Position),
+		Azimuth:  unit.AngleFromDeg(driver.Azimuth.GetData().Position),
+	}
+	driver.storeData.ActualPosition = position.NewStellarPositionAltAz(altAz, &driver.storeData.GroundPosition)
+
 	return AltAzDriverData{
 		Altitude: driver.Altitude.GetData(),
 		Azimuth:  driver.Azimuth.GetData(),

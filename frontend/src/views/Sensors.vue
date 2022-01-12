@@ -3,11 +3,11 @@
     <h2>Lagesensor</h2>
     <status-string
       caption="Azimut"
-      :status="vxm.user.storeData.sensorPosition.horizontal.azimuth.toString()"
+      :status="radToString(vxm.user.storeData.sensorPosition.horizontal.azimuth)"
     ></status-string>
     <status-string
       caption="Altitude"
-      :status="vxm.user.storeData.sensorPosition.horizontal.altitude.toString()"
+      :status="radToString(vxm.user.storeData.sensorPosition.horizontal.altitude)"
     ></status-string>
     <h2>GPS</h2>
     <status-number
@@ -35,10 +35,10 @@
     >
     <h2>Alt/Az-Steuerung</h2>
 
-    <status-string caption="Motor Atltiude" :status="vxm.user.storeData.actualPosition.horizontal.altitude.toString()"/>
-    <status-string caption="Motor Azimuth" :status="vxm.user.storeData.actualPosition.horizontal.azimuth.toString()"/>
-        <status-string caption="Ziel Atltiude" :status="vxm.user.storeData.targetPosition.horizontal.altitude.toString()"/>
-    <status-string caption="Ziel Azimuth" :status="vxm.user.storeData.targetPosition.horizontal.azimuth.toString()"/>
+    <status-string caption="Motor Atltiude" :status="radToString(vxm.user.storeData.actualPosition.horizontal.altitude)"/>
+    <status-string caption="Motor Azimuth" :status="radToString(vxm.user.storeData.actualPosition.horizontal.azimuth)"/>
+    <status-string caption="Ziel Atltiude" :status="radToString(vxm.user.storeData.targetPosition.horizontal.altitude)"/>
+    <status-string caption="Ziel Azimuth" :status="radToString(vxm.user.storeData.targetPosition.horizontal.azimuth)"/>
   </div>
 </template>
 
@@ -49,6 +49,7 @@ import { vxm } from "../store";
 import StatusString from "../components/StatusString.vue";
 import StatusNumber from "../components/StatusNumber.vue";
 import StatusUnit from "../components/StatusUnit.vue";
+import {radToString} from "../plugins/angles"
 
 @Component({
   components: {
@@ -76,6 +77,9 @@ export default class Position extends Vue {
       (x as any)["system"]=x.prn>=38?"GLONASS":"GPS";
       return x;
     });
+  }
+  radToString(rad:number):string{
+    return radToString(rad);
   }
 }
 </script>

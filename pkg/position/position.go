@@ -1,5 +1,14 @@
 package position
 
+import (
+	"time"
+
+	"github.com/soniakeys/meeus/v3/coord"
+	"github.com/soniakeys/meeus/v3/julian"
+	"github.com/soniakeys/meeus/v3/sidereal"
+	"github.com/soniakeys/unit"
+)
+
 type Position struct {
 	Altitude float32 `json:"alt"`
 	Azimuth  float32 `json:"az"`
@@ -11,11 +20,98 @@ type StellarPositionData struct {
 }
 
 type EqPos struct {
-	Declination    float64 `json:"declination"`
-	RightAscension float64 `json:"rightAscension"`
+	Declination    unit.Angle `json:"declination"`
+	RightAscension unit.RA    `json:"rightAscension"`
 }
 
 type AltAzPos struct {
-	Altitude float64 `json:"altitude"`
-	Azimuth  float64 `json:"azimuth"`
+	Altitude unit.Angle `json:"altitude"`
+	Azimuth  unit.Angle `json:"azimuth"`
+}
+
+type GroundPosition struct {
+	Latitude  unit.Angle
+	Longitude unit.Angle
+}
+
+type StellarPosition struct {
+	isEq   bool
+	eq     EqPos
+	altAz  AltAzPos
+	ground *GroundPosition
+}
+
+func NewStellarPositionEq(eqPos EqPos, ground *GroundPosition) StellarPosition {
+	altAz := AltAzPos{Altitude: 0, Azimuth: 0}
+	return StellarPosition{isEq: true, eq: eqPos, ground: ground, altAz: altAz}
+}
+func NewStellarPositionAltAz(altAz AltAzPos, ground *GroundPosition) StellarPosition {
+	eqPos := EqPos{0, 0}
+	return StellarPosition{isEq: false, eq: eqPos, ground: ground, altAz: altAz}
+}
+
+func (pos *StellarPosition) GetData() StellarPositionData {
+	eq := pos.eq
+	alt := pos.altAz
+	jd := julian.TimeToJD(time.Now())
+	if pos.isEq {
+		pos.altAz.Azimuth, pos.altAz.Altitude = coord.EqToHz(
+			eq.RightAscension,
+			eq.Declination,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+	} else {
+		pos.eq.RightAscension, pos.eq.Declination = coord.HzToEq(
+			alt.Azimuth,
+			alt.Altitude,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+	}
+	return StellarPositionData{Equatorial: pos.eq, Horizontal: pos.altAz}
+}
+
+func (pos *StellarPosition) SetGround(ground *GroundPosition) {
+	pos.ground = ground
+}
+func (pos *StellarPosition) SetEq(isEq bool) {
+	jd := julian.TimeToJD(time.Now())
+	if isEq {
+		alt := pos.GetData().Horizontal
+		ra, dec := coord.HzToEq(
+			alt.Azimuth,
+			alt.Altitude,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+		pos.eq.RightAscension = ra
+		pos.eq.Declination = dec
+		pos.isEq = true
+	} else {
+		eq := pos.eq
+		A, h := coord.EqToHz(
+			eq.RightAscension,
+			eq.Declination,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+		pos.altAz.Azimuth = A
+		pos.altAz.Azimuth = h
+		pos.isEq = false
+	}
+}
+
+func (pos *StellarPosition) SetEqPos(eq EqPos) {
+	pos.eq = eq
+
+	if !pos.isEq {
+		jd := julian.TimeToJD(time.Now())
+		pos.altAz.Azimuth, pos.altAz.Altitude = coord.EqToHz(
+			eq.RightAscension,
+			eq.Declination,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+	}
 }

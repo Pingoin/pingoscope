@@ -40,12 +40,12 @@ func getDriver(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, altAzDriver.GetData())
 }
 func getSensor(c echo.Context) error {
-	return c.JSON(http.StatusAccepted, storeFiles.Data.SensorPosition)
+	return c.JSON(http.StatusAccepted, storeFiles.GetData().SensorPosition)
 }
 
 func getStore(c echo.Context) error {
 	altAzDriver.GetData()
-	return c.JSON(http.StatusAccepted, storeFiles.Data)
+	return c.JSON(http.StatusAccepted, storeFiles.GetData())
 }
 
 func setTarget(c echo.Context) error {

@@ -4,7 +4,9 @@ import (
 	"time"
 
 	"github.com/Pingoin/pingoscope/internal/store"
+	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/kpeu3i/bno055"
+	"github.com/soniakeys/unit"
 )
 
 var sensor *bno055.Sensor
@@ -31,9 +33,11 @@ func Init(storeData *store.Store) {
 		if err != nil {
 			panic(err)
 		}
-		storeData.Data.SensorPosition.Horizontal.Altitude = float64(vector.Z)
-		storeData.Data.SensorPosition.Horizontal.Azimuth = float64(vector.X)
-		//fmt.Printf("\r*** Euler angles: x=%5.3f, y=%5.3f, z=%5.3f", vector.X, vector.Y, vector.Z)
+		altAz := position.AltAzPos{
+			Altitude: unit.AngleFromDeg(float64(vector.Z)),
+			Azimuth:  unit.AngleFromDeg(float64(vector.X)),
+		}
+		storeData.SensorPosition = position.NewStellarPositionAltAz(altAz, &storeData.GroundPosition)
 		time.Sleep(100 * time.Millisecond)
 	}
 }
