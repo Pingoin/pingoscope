@@ -3,11 +3,15 @@
     <h2>Lagesensor</h2>
     <status-string
       caption="Azimut"
-      :status="radToString(vxm.user.storeData.sensorPosition.horizontal.azimuth)"
+      :status="
+        radToString(vxm.user.storeData.sensorPosition.horizontal.azimuth)
+      "
     ></status-string>
     <status-string
       caption="Altitude"
-      :status="radToString(vxm.user.storeData.sensorPosition.horizontal.altitude)"
+      :status="
+        radToString(vxm.user.storeData.sensorPosition.horizontal.altitude)
+      "
     ></status-string>
     <h2>GPS</h2>
     <status-number
@@ -35,10 +39,30 @@
     >
     <h2>Alt/Az-Steuerung</h2>
 
-    <status-string caption="Motor Atltiude" :status="radToString(vxm.user.storeData.actualPosition.horizontal.altitude)"/>
-    <status-string caption="Motor Azimuth" :status="radToString(vxm.user.storeData.actualPosition.horizontal.azimuth)"/>
-    <status-string caption="Ziel Atltiude" :status="radToString(vxm.user.storeData.targetPosition.horizontal.altitude)"/>
-    <status-string caption="Ziel Azimuth" :status="radToString(vxm.user.storeData.targetPosition.horizontal.azimuth)"/>
+    <status-string
+      caption="Motor Atltiude"
+      :status="
+        radToString(vxm.user.storeData.actualPosition.horizontal.altitude)
+      "
+    />
+    <status-string
+      caption="Motor Azimuth"
+      :status="
+        radToString(vxm.user.storeData.actualPosition.horizontal.azimuth)
+      "
+    />
+    <status-string
+      caption="Ziel Atltiude"
+      :status="
+        radToString(vxm.user.storeData.targetPosition.horizontal.altitude)
+      "
+    />
+    <status-string
+      caption="Ziel Azimuth"
+      :status="
+        radToString(vxm.user.storeData.targetPosition.horizontal.azimuth)
+      "
+    />
   </div>
 </template>
 
@@ -49,7 +73,7 @@ import { vxm } from "../store";
 import StatusString from "../components/StatusString.vue";
 import StatusNumber from "../components/StatusNumber.vue";
 import StatusUnit from "../components/StatusUnit.vue";
-import {radToString} from "../plugins/angles"
+import { radToString } from "../plugins/angles";
 
 @Component({
   components: {
@@ -64,21 +88,37 @@ export default class Position extends Vue {
   }
   get satHeaders() {
     return [
-      { text: "PRN-ID", value: "prn" },
+      { text: "PRN-ID", value: "SVPRNNumber" },
       { text: "Satelliten-System", value: "system" },
-      { text: "Altitude", value: "elevation" },
-      { text: "Azimut", value: "azimuth" },
-      { text: "Signal-Noise-Ratio", value: "snr" },
-      { text: "Status", value: "status" }
+      { text: "Altitude", value: "Elevation" },
+      { text: "Azimut", value: "Azimuth" },
+      { text: "Signal-Noise-Ratio", value: "SNR" }
     ];
   }
   get satsVisible() {
-    return vxm.user.storeData.gnssData.satsVisible?.map(x=>{
-      (x as any)["system"]=x.prn>=38?"GLONASS":"GPS";
+    let sats = vxm.user.storeData.gnssData.satsGlonassVisible.map(x => {
+      (x as any)["system"] = "GLONASS";
       return x;
     });
+
+    vxm.user.storeData.gnssData.satsGpsVisible.map(x => {
+      (x as any)["system"] = "GPS";
+      return x;
+    }).forEach(sat=>sats.push(sat))
+
+        vxm.user.storeData.gnssData.satsGalileoVisible.map(x => {
+      (x as any)["system"] = "Galileo";
+      return x;
+    }).forEach(sat=>sats.push(sat))
+
+        vxm.user.storeData.gnssData.satsBeidouVisible.map(x => {
+      (x as any)["system"] = "Beidou";
+      return x;
+    }).forEach(sat=>sats.push(sat))
+
+    return sats;
   }
-  radToString(rad:number):string{
+  radToString(rad: number): string {
     return radToString(rad);
   }
 }

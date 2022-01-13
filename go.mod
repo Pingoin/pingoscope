@@ -3,6 +3,8 @@ module github.com/Pingoin/pingoscope
 go 1.17
 
 require (
+	github.com/adrianmo/go-nmea v1.6.0
+	github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4
 	github.com/kpeu3i/bno055 v1.0.3
 	github.com/labstack/echo/v4 v4.6.2
 	github.com/soniakeys/meeus/v3 v3.0.1

@@ -13,11 +13,14 @@ import (
 	"github.com/Pingoin/pingoscope/internal/api"
 	"github.com/Pingoin/pingoscope/internal/imu"
 	"github.com/Pingoin/pingoscope/internal/store"
+	"github.com/Pingoin/pingoscope/pkg/gnss"
 	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/Pingoin/pingoscope/pkg/stellariumadapter"
 
 	"github.com/soniakeys/unit"
 	"github.com/stianeikeland/go-rpio/v4"
+
+	"github.com/jacobsa/go-serial/serial"
 )
 
 const (
@@ -34,11 +37,24 @@ func main() {
 	storefiles := store.NewStore(
 		position.GroundPosition{
 			Latitude:  unit.NewAngle(' ', 53, 38, 2.77),
-			Longitude: unit.NewAngle('-', 14, 0, 48.16),
+			Longitude: unit.NewAngle(' ', 14, 0, 48.16),
 		},
 	)
 
+	options := serial.OpenOptions{
+		PortName:        "/dev/serial0",
+		BaudRate:        9600,
+		DataBits:        8,
+		StopBits:        1,
+		MinimumReadSize: 80,
+	}
+
+	gnss := gnss.NewGnss(&storefiles.GroundPosition, &storefiles.GnssData, options)
+
+	go gnss.Loop()
+	defer gnss.Close()
 	go stellariumadapter.Socket(connType, connHost, connPort, &storefiles.StellariumPosition)
+
 	err := rpio.Open()
 
 	if err != nil {

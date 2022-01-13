@@ -1,9 +1,9 @@
 package store
 
 import (
-	"time"
-
+	"github.com/Pingoin/pingoscope/pkg/gnss"
 	"github.com/Pingoin/pingoscope/pkg/position"
+	"github.com/adrianmo/go-nmea"
 )
 
 type Store struct {
@@ -12,10 +12,23 @@ type Store struct {
 	ActualPosition     position.StellarPosition
 	StellariumPosition position.StellarPosition
 	GroundPosition     position.GroundPosition
+	GnssData           gnss.GnssData
 }
 
 func NewStore(ground position.GroundPosition) Store {
 	az := position.AltAzPos{Altitude: 0, Azimuth: 0}
+
+	gnssTemp := gnss.GnssData{
+		Alt:                0,
+		SatsGpsVisible:     []nmea.GSVInfo{},
+		SatsGlonassVisible: []nmea.GSVInfo{},
+		SatsGalileoVisible: []nmea.GSVInfo{},
+		SatsBeidouVisible:  []nmea.GSVInfo{},
+		Fix:                "",
+		Hdop:               0,
+		Pdop:               0,
+		Vdop:               0,
+	}
 	store := Store{
 		data: StoreData{
 			MagneticDeclination: 0,
@@ -40,27 +53,13 @@ func NewStore(ground position.GroundPosition) Store {
 			SystemInformation: sysInfo{
 				CpuTemp: 0,
 			},
-			GnssData: gnssData{
-				Errors:      0,
-				Processed:   0,
-				Time:        time.Now(),
-				Lat:         0,
-				Lon:         0,
-				Alt:         0,
-				Speed:       0,
-				Track:       0,
-				SatsActive:  []float64{},
-				SatsVisible: []satData{},
-				Fix:         "",
-				Hdop:        0,
-				Pdop:        0,
-				Vdop:        0,
-			},
+			GnssData: gnssTemp,
 		},
 		SensorPosition:     position.NewStellarPositionAltAz(az, &ground),
 		ActualPosition:     position.NewStellarPositionAltAz(az, &ground),
 		StellariumPosition: position.NewStellarPositionAltAz(az, &ground),
 		GroundPosition:     ground,
+		GnssData:           gnssTemp,
 	}
 
 	store.SensorPosition.SetGround(&store.GroundPosition)
@@ -73,5 +72,8 @@ func (store *Store) GetData() StoreData {
 	store.data.SensorPosition = store.SensorPosition.GetData()
 	store.data.ActualPosition = store.ActualPosition.GetData()
 	store.data.StellariumTarget = store.StellariumPosition.GetData()
+	store.data.Latitude = store.GroundPosition.Latitude.Deg()
+	store.data.Longitude = store.GroundPosition.Longitude.Deg()
+	store.data.GnssData = store.GnssData
 	return store.data
 }
