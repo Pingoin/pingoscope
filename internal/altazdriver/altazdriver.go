@@ -19,11 +19,14 @@ const diameterAzNeutralPhase = float64(601)
 const diameterAltNeutralPhase = float64(301)
 const toothWidth = float64(2)
 
+const microsteppingAz = 16
+const microsteppingAlt = 16
+
 var teethAz = math.Round(math.Pi * diameterAzNeutralPhase / toothWidth)
 var teethAlt = math.Round(math.Pi * diameterAltNeutralPhase / toothWidth)
 
-var unitPerStepAz = 360 / stepsPerRevolveAz * teethMotor / teethAz
-var unitPerStepAlt = 360 / stepsPerRevolveAlt * teethMotor / teethAlt
+var unitPerStepAz = 360 / stepsPerRevolveAz * teethMotor / teethAz / microsteppingAz
+var unitPerStepAlt = 360 / stepsPerRevolveAlt * teethMotor / teethAlt / microsteppingAlt
 
 type AltAzDriver struct {
 	Altitude  stepper.Stepper
@@ -46,7 +49,7 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	azDir.Output()
 	azEna := rpio.Pin(azEnaNr)
 	azEna.Output()
-	azimuth := stepper.New(azStep, azDir, azEna, unitPerStepAz, 200, 10)
+	azimuth := stepper.New(azStep, azDir, azEna, unitPerStepAz, 2000, 10)
 	azimuth.SetTarget(5)
 
 	altStep := rpio.Pin(altStepNr)
@@ -55,8 +58,10 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	altDir.Output()
 	altEna := rpio.Pin(altEnaNr)
 	altEna.Output()
-	altitude := stepper.New(azStep, azDir, azEna, unitPerStepAlt, 200, 10)
+	altitude := stepper.New(azStep, azDir, azEna, unitPerStepAlt, 2000, 10)
 	altitude.SetTarget(5)
+
+	storeNew.TargetPosition.SetAltAzPos(position.AltAzPos{Altitude: unit.AngleFromDeg(5), Azimuth: unit.AngleFromDeg(5)})
 	return AltAzDriver{
 		Altitude:  altitude,
 		Azimuth:   azimuth,

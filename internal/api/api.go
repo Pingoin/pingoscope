@@ -21,7 +21,7 @@ func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, storeN
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.RemoveTrailingSlash())

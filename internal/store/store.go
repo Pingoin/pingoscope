@@ -11,6 +11,7 @@ type Store struct {
 	SensorPosition     position.StellarPosition
 	ActualPosition     position.StellarPosition
 	StellariumPosition position.StellarPosition
+	TargetPosition     position.StellarPosition
 	GroundPosition     position.GroundPosition
 	GnssData           gnss.GnssData
 }
@@ -58,6 +59,7 @@ func NewStore(ground position.GroundPosition) Store {
 		SensorPosition:     position.NewStellarPositionAltAz(az, &ground),
 		ActualPosition:     position.NewStellarPositionAltAz(az, &ground),
 		StellariumPosition: position.NewStellarPositionAltAz(az, &ground),
+		TargetPosition:     position.NewStellarPositionAltAz(az, &ground),
 		GroundPosition:     ground,
 		GnssData:           gnssTemp,
 	}
@@ -72,6 +74,7 @@ func (store *Store) GetData() StoreData {
 	store.data.SensorPosition = store.SensorPosition.GetData()
 	store.data.ActualPosition = store.ActualPosition.GetData()
 	store.data.StellariumTarget = store.StellariumPosition.GetData()
+	store.data.TargetPosition = store.TargetPosition.GetData()
 	store.data.Latitude = store.GroundPosition.Latitude.Deg()
 	store.data.Longitude = store.GroundPosition.Longitude.Deg()
 	store.data.GnssData = store.GnssData

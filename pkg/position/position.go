@@ -122,3 +122,19 @@ func (pos *StellarPosition) SetEqPos(eq EqPos) {
 		pos.altAz.Azimuth += math.Pi
 	}
 }
+
+func (pos *StellarPosition) SetAltAzPos(altAz AltAzPos) {
+	pos.altAz = altAz
+
+	if pos.isEq {
+		jd := julian.TimeToJD(time.Now())
+		ra, dec := coord.HzToEq(
+			altAz.Azimuth+math.Pi,
+			altAz.Altitude,
+			pos.ground.Latitude,
+			pos.ground.Longitude,
+			sidereal.Apparent(jd))
+		pos.eq.RightAscension = ra
+		pos.eq.Declination = dec
+	}
+}

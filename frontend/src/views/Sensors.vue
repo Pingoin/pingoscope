@@ -1,80 +1,35 @@
 <template>
   <div>
-    <h2>Lagesensor</h2>
-    <status-string
-      caption="Azimut"
-      :status="
-        radToString(vxm.user.storeData.sensorPosition.horizontal.azimuth)
-      "
-    ></status-string>
-    <status-string
-      caption="Altitude"
-      :status="
-        radToString(vxm.user.storeData.sensorPosition.horizontal.altitude)
-      "
-    ></status-string>
     <h2>GPS</h2>
-    <status-number
+    <status-string
       caption="Längenengrad"
-      :status="vxm.user.storeData.longitude"
+      :status="radToString(vxm.user.storeData.longitude/180*Math.PI)"
     />
-    <status-number
+    <status-string
       caption="Breitengrad"
-      :status="vxm.user.storeData.latitude"
+      :status="radToString(vxm.user.storeData.latitude/180*Math.PI)"
     />
-
     <v-data-table
       :headers="satHeaders"
       :items="satsVisible"
       :items-per-page="10"
       class="elevation-1"
     ></v-data-table>
+  <h2>Positionen</h2>
+    <v-data-table
+      :headers="posHeaders"
+      :items="posData"
+      class="elevation-1"
+      hide-default-footer
+    />
 
     <h2>Raspberry Pi-Sensoren</h2>
     <status-unit
       caption="CPU-Temperatur"
       :status="vxm.user.storeData.systemInformation.cpuTemp"
       unit="°C"
-      >y</status-unit
-    >
-    <h2>Alt/Az-Steuerung</h2>
+      />
 
-    <status-string
-      caption="Motor Atltiude"
-      :status="
-        radToString(vxm.user.storeData.actualPosition.horizontal.altitude)
-      "
-    />
-    <status-string
-      caption="Motor Azimuth"
-      :status="
-        radToString(vxm.user.storeData.actualPosition.horizontal.azimuth)
-      "
-    />
-        <status-string
-      caption="Motor RA"
-      :status="
-        radToHourString(vxm.user.storeData.actualPosition.equatorial.rightAscension)
-      "
-    />
-    <status-string
-      caption="Motor Decl"
-      :status="
-        radToString(vxm.user.storeData.actualPosition.equatorial.declination)
-      "
-    />
-    <status-string
-      caption="Ziel Atltiude"
-      :status="
-        radToString(vxm.user.storeData.targetPosition.horizontal.altitude)
-      "
-    />
-    <status-string
-      caption="Ziel Azimuth"
-      :status="
-        radToString(vxm.user.storeData.targetPosition.horizontal.azimuth)
-      "
-    />
   </div>
 </template>
 
@@ -86,6 +41,7 @@ import StatusString from "../components/StatusString.vue";
 import StatusNumber from "../components/StatusNumber.vue";
 import StatusUnit from "../components/StatusUnit.vue";
 import { radToString,radToHourString } from "../plugins/angles";
+import { StellarPositionData } from "../../../shared";
 
 @Component({
   components: {
@@ -136,6 +92,32 @@ export default class Position extends Vue {
     radToHourString(rad: number): string {
     return radToHourString(rad);
   }
+
+get posHeaders(){
+  return[
+    {text: "Name", value: "name"},
+    {text: "Azimuth", value: "azimuth"},
+    {text: "Altitude", value: "altitude"},
+    {text: "Right Ascension", value: "rightAscension"},
+    {text: "Declination", value: "declination"},
+  ]
+}
+get posData(){
+  let tmp:{data:StellarPositionData,name:string}[]=[]
+  tmp.push({data:vxm.user.storeData.actualPosition,name:"Actual"})
+  tmp.push({data:vxm.user.storeData.sensorPosition,name:"Sensor"})
+  tmp.push({data:vxm.user.storeData.targetPosition,name:"Target"})
+  tmp.push({data:vxm.user.storeData.stellariumTarget,name:"Stellarium"})
+
+  return(tmp.map(x=>{return {
+    name:x.name,
+    altitude: radToString(x.data.horizontal.altitude),
+    azimuth: radToString(x.data.horizontal.azimuth),
+    rightAscension:radToHourString(x.data.equatorial.rightAscension),
+    declination: radToString(x.data.equatorial.declination),
+    }}))
+
+}
 
 }
 </script>
