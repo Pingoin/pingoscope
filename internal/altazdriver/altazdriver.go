@@ -1,12 +1,29 @@
 package altazdriver
 
 import (
+	"math"
+
 	"github.com/Pingoin/pingoscope/internal/store"
 	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/Pingoin/pingoscope/pkg/stepper"
 	"github.com/soniakeys/unit"
 	"github.com/stianeikeland/go-rpio/v4"
 )
+
+const stepsPerRevolveAz = float64(200)
+const stepsPerRevolveAlt = float64(200)
+
+const teethMotor = float64(20)
+
+const diameterAzNeutralPhase = float64(601)
+const diameterAltNeutralPhase = float64(301)
+const toothWidth = float64(2)
+
+var teethAz = math.Round(math.Pi * diameterAzNeutralPhase / toothWidth)
+var teethAlt = math.Round(math.Pi * diameterAltNeutralPhase / toothWidth)
+
+var unitPerStepAz = 360 / stepsPerRevolveAz * teethMotor / teethAz
+var unitPerStepAlt = 360 / stepsPerRevolveAlt * teethMotor / teethAlt
 
 type AltAzDriver struct {
 	Altitude  stepper.Stepper
@@ -29,7 +46,7 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	azDir.Output()
 	azEna := rpio.Pin(azEnaNr)
 	azEna.Output()
-	azimuth := stepper.New(azStep, azDir, azEna, 1, 200, 10)
+	azimuth := stepper.New(azStep, azDir, azEna, unitPerStepAz, 200, 10)
 	azimuth.SetTarget(5)
 
 	altStep := rpio.Pin(altStepNr)
@@ -38,7 +55,7 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	altDir.Output()
 	altEna := rpio.Pin(altEnaNr)
 	altEna.Output()
-	altitude := stepper.New(azStep, azDir, azEna, 1, 200, 10)
+	altitude := stepper.New(azStep, azDir, azEna, unitPerStepAlt, 200, 10)
 	altitude.SetTarget(5)
 	return AltAzDriver{
 		Altitude:  altitude,
