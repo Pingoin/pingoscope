@@ -1,6 +1,7 @@
 package position
 
 import (
+	"math"
 	"time"
 
 	"github.com/soniakeys/meeus/v3/coord"
@@ -54,20 +55,25 @@ func (pos *StellarPosition) GetData() StellarPositionData {
 	eq := pos.eq
 	alt := pos.altAz
 	jd := julian.TimeToJD(time.Now())
+	s0 := sidereal.Apparent0UT(jd)
+
 	if pos.isEq {
 		pos.altAz.Azimuth, pos.altAz.Altitude = coord.EqToHz(
 			eq.RightAscension,
 			eq.Declination,
 			pos.ground.Latitude,
-			pos.ground.Longitude,
-			sidereal.Apparent(jd))
+			-pos.ground.Longitude,
+			s0,
+		)
+		pos.altAz.Azimuth += math.Pi
 	} else {
 		pos.eq.RightAscension, pos.eq.Declination = coord.HzToEq(
-			alt.Azimuth,
+			alt.Azimuth+math.Pi,
 			alt.Altitude,
 			pos.ground.Latitude,
-			pos.ground.Longitude,
-			sidereal.Apparent(jd))
+			-pos.ground.Longitude,
+			s0,
+		)
 	}
 	return StellarPositionData{Equatorial: pos.eq, Horizontal: pos.altAz}
 }
@@ -80,7 +86,7 @@ func (pos *StellarPosition) SetEq(isEq bool) {
 	if isEq {
 		alt := pos.GetData().Horizontal
 		ra, dec := coord.HzToEq(
-			alt.Azimuth,
+			alt.Azimuth+math.Pi,
 			alt.Altitude,
 			pos.ground.Latitude,
 			pos.ground.Longitude,
@@ -96,8 +102,8 @@ func (pos *StellarPosition) SetEq(isEq bool) {
 			pos.ground.Latitude,
 			pos.ground.Longitude,
 			sidereal.Apparent(jd))
-		pos.altAz.Azimuth = A
-		pos.altAz.Azimuth = h
+		pos.altAz.Azimuth = A + math.Pi
+		pos.altAz.Altitude = h
 		pos.isEq = false
 	}
 }
@@ -113,5 +119,6 @@ func (pos *StellarPosition) SetEqPos(eq EqPos) {
 			pos.ground.Latitude,
 			pos.ground.Longitude,
 			sidereal.Apparent(jd))
+		pos.altAz.Azimuth += math.Pi
 	}
 }

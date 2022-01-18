@@ -53,7 +53,7 @@ func main() {
 
 	go gnss.Loop()
 	defer gnss.Close()
-	go stellariumadapter.Socket(connType, connHost, connPort, &storefiles.StellariumPosition)
+	go stellariumadapter.Socket(connType, connHost, connPort, &storefiles.StellariumPosition, &storefiles.ActualPosition)
 
 	err := rpio.Open()
 

@@ -31,7 +31,7 @@ func NewStore(ground position.GroundPosition) Store {
 	}
 	store := Store{
 		data: StoreData{
-			MagneticDeclination: 0,
+			MagneticDeclination: 4.83,
 			Longitude:           1,
 			Latitude:            1,
 			SensorPosition: position.StellarPositionData{

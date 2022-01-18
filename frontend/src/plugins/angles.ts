@@ -2,6 +2,9 @@ export function radToString(angle: number): string {
     return degreesToString(angle * 180 / Math.PI);
 }
 
+export function radToHourString(angle: number): string {
+    return hoursToString(angle * 12 / Math.PI);
+}
 
 export function hoursToString(hours: number): string {
 

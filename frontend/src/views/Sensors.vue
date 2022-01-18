@@ -51,6 +51,18 @@
         radToString(vxm.user.storeData.actualPosition.horizontal.azimuth)
       "
     />
+        <status-string
+      caption="Motor RA"
+      :status="
+        radToHourString(vxm.user.storeData.actualPosition.equatorial.rightAscension)
+      "
+    />
+    <status-string
+      caption="Motor Decl"
+      :status="
+        radToString(vxm.user.storeData.actualPosition.equatorial.declination)
+      "
+    />
     <status-string
       caption="Ziel Atltiude"
       :status="
@@ -73,7 +85,7 @@ import { vxm } from "../store";
 import StatusString from "../components/StatusString.vue";
 import StatusNumber from "../components/StatusNumber.vue";
 import StatusUnit from "../components/StatusUnit.vue";
-import { radToString } from "../plugins/angles";
+import { radToString,radToHourString } from "../plugins/angles";
 
 @Component({
   components: {
@@ -121,5 +133,9 @@ export default class Position extends Vue {
   radToString(rad: number): string {
     return radToString(rad);
   }
+    radToHourString(rad: number): string {
+    return radToHourString(rad);
+  }
+
 }
 </script>
