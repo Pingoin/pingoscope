@@ -32,6 +32,7 @@ func HandleRequests(port string, altazdriverNew *altazdriver.AltAzDriver, storeN
 	e.GET("/api/driver", getDriver)
 	e.GET("/api/sensor", getSensor)
 	e.GET("/api/store", getStore)
+	e.GET("/api/image", getImage)
 
 	e.Logger.Fatal(e.Start(port))
 }
@@ -46,6 +47,10 @@ func getSensor(c echo.Context) error {
 func getStore(c echo.Context) error {
 	altAzDriver.GetData()
 	return c.JSON(http.StatusAccepted, storeFiles.GetData())
+}
+
+func getImage(c echo.Context) error {
+	return c.String(http.StatusAccepted, storeFiles.Image)
 }
 
 func setTarget(c echo.Context) error {

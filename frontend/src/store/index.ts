@@ -78,6 +78,7 @@ export class UserStore extends VuexModule {
 
   @action async fetchData() {
     this.storeData=(await axios.get<StoreData>("/api/store")).data;
+    this.image=(await axios.get<string>("/api/image")).data;
   }
   @action async setTargetType(type: "horizontal" | "equatorial") {
     

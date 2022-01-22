@@ -1,43 +1,93 @@
 {
-    "tasks": [
-        {
-            "label": "Run Driver",
-            "type": "shell",
-            "command": "gow run ./cmd/pingoscope",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
-        },
-        {
-            "label": "Run Driver",
-            "type": "shell",
-            "command": "gow run ./cmd/pingoscope",
-            "group": "build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
-        },
-        {
-            "label": "serve frontend",
-            "type": "shell",
-            "command": "cd frontend && npm run serve",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
-        },
-        {
-            "label": "build frontend",
-            "type": "shell",
-            "command": "cd frontend && npm run build",
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
+  "tasks": [
+    {
+      "label": "backend: serve",
+      "type": "shell",
+      "command": "gow run ./cmd/pingoscope",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Serve Backend",
+      "options": {
+        "statusbar": {
+          "label": "$(circuit-board) serve"
         }
-    ],
-    "version": "2.0.0"
+      }
+    },
+    {
+      "label": "backend: build",
+      "type": "shell",
+      "command": "go build ./cmd/pingoscope",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Build Backend",
+      "options": {
+        "statusbar": {
+          "label": "$(circuit-board) Build"
+        }
+      }
+    },
+    {
+        "label": "backend: Docs",
+        "type": "shell",
+        "command": "godoc -http=:6060",
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "detail": "Show Docs",
+        "options": {
+          "statusbar": {
+            "label": "$(circuit-board) Docs"
+          }
+        }
+      },
+    {
+      "label": "frontend: serve",
+      "type": "npm",
+      "script": "serve",
+      "path": "frontend/",
+      "problemMatcher": [],
+      "detail": "Serve Frontend",
+      "options": {
+        "statusbar": {
+          "label": "$(globe) serve"
+        }
+      }
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "frontend/",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "frontend: build",
+      "detail": "Build Frontend",
+      "options": {
+        "statusbar": {
+          "label": "$(globe) Build"
+        }
+      }
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "frontend/",
+      "problemMatcher": [],
+      "label": "frontend: install dependencies",
+      "detail": "install dependencies from package",
+      "options": {
+        "statusbar": {
+          "label": "$(globe) install"
+        }
+      }
+    }
+  ],
+  "version": "2.0.0"
 }

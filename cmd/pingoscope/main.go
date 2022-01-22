@@ -2,6 +2,9 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"os"
@@ -20,6 +23,7 @@ import (
 	"github.com/soniakeys/unit"
 	"github.com/stianeikeland/go-rpio/v4"
 
+	"github.com/dhowden/raspicam"
 	"github.com/jacobsa/go-serial/serial"
 )
 
@@ -60,7 +64,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
+	go cam(&storefiles.Image)
 	//azStep dir sollte 19 sein, nut test auf 3
 	driver := altazdriver.NewAltAzDriver(3, 13, 12, 18, 24, 4, &storefiles)
 	go driver.Altitude.Loop()
@@ -81,4 +85,20 @@ func main() {
 			time.Sleep(time.Millisecond)
 		}
 	}
+}
+
+func cam(imageB64 *string) {
+	var b bytes.Buffer
+	f := bufio.NewWriter(&b)
+	s := raspicam.NewStill()
+	s.Command = "libcamera-still"
+	errCh := make(chan error)
+	go func() {
+		for x := range errCh {
+			fmt.Fprintf(os.Stderr, "%v\n", x)
+		}
+	}()
+	fmt.Println("Capturing image...")
+	raspicam.Capture(s, f, errCh)
+	*imageB64 = base64.StdEncoding.EncodeToString(b.Bytes())
 }

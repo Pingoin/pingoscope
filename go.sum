@@ -3,6 +3,8 @@ github.com/adrianmo/go-nmea v1.6.0/go.mod h1:u8bPnpKt/D/5rll/5l9f6iDfeq5WZW0+/SX
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dhowden/raspicam v0.0.0-20190323051945-60ef25a6629f h1:oT+wXjVnCofGqUTbPqRJKs3ne9vhxNumXk3PxMRkRTc=
+github.com/dhowden/raspicam v0.0.0-20190323051945-60ef25a6629f/go.mod h1:OMzt06oC5E5YW+9MyiiuX5oNfBGzpTeMRmGOK5OB8SE=
 github.com/golang-jwt/jwt v3.2.2+incompatible h1:IfV12K8xAKAnZqdXVzCZ+TOjboZ2keLg81eXfW3O+oY=
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=
 github.com/jacobsa/go-serial v0.0.0-20180131005756-15cf729a72d4 h1:G2ztCwXov8mRvP0ZfjE6nAlaCX2XbykaeHdbT6KwDz0=

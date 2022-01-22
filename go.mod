@@ -14,6 +14,7 @@ require (
 )
 
 require (
+	github.com/dhowden/raspicam v0.0.0-20190323051945-60ef25a6629f
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect

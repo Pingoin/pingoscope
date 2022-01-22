@@ -14,6 +14,7 @@ type Store struct {
 	TargetPosition     position.StellarPosition
 	GroundPosition     position.GroundPosition
 	GnssData           gnss.GnssData
+	Image              string
 }
 
 func NewStore(ground position.GroundPosition) Store {
