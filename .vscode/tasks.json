@@ -3,7 +3,7 @@
     {
       "label": "backend: serve",
       "type": "shell",
-      "command": "gow run ./cmd/pingoscope",
+      "command": "gow run cmd/pingoscope/main.go",
       "group": "build",
       "presentation": {
         "reveal": "always",
@@ -19,7 +19,7 @@
     {
       "label": "backend: build",
       "type": "shell",
-      "command": "go build ./cmd/pingoscope",
+      "command": "go build cmd/pingoscope/main.go",
       "group": "build",
       "presentation": {
         "reveal": "always",

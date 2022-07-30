@@ -37,16 +37,16 @@ get followAxis(){
     return false;
 }
 left(){
-  alert("left");
+  vxm.user.moveStep({dir:"left"})
 }
 right(){
-  alert("right");
+ vxm.user.moveStep({dir:"right"})
 }
 up(){
-  alert("up");
+  vxm.user.moveStep({dir:"up"})
 }
 down(){
-  alert("down");
+ vxm.user.moveStep({dir:"down"})
 }
 toggleAxis(){
   vxm.user.setTargetType(this.followAxis?"horizontal":"equatorial");

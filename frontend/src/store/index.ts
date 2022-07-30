@@ -2,7 +2,7 @@ import { createModule, mutation, action, extractVuexModule, createProxy } from "
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from "axios";
-import { satData, StoreData } from "../shared";
+import { satData, StoreData,Direction } from "../shared";
 
 
 const VuexModule = createModule({
@@ -83,6 +83,12 @@ export class UserStore extends VuexModule {
   @action async setTargetType(type: "horizontal" | "equatorial") {
     
   }
+
+  @action async moveStep(dir:Direction){
+    console.log(dir.dir);
+
+  }
+
 }
 
 export const store = new Vuex.Store({

@@ -10,3 +10,7 @@ export interface StellarPositionData {
     azimuth: number;
   };
 }
+
+export interface Direction{
+  dir:"up"|"down"|"left"|"right";
+}
