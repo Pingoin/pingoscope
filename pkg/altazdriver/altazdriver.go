@@ -3,7 +3,6 @@ package altazdriver
 import (
 	"math"
 
-	"github.com/Pingoin/pingoscope/internal/store"
 	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/Pingoin/pingoscope/pkg/stepper"
 	"github.com/soniakeys/unit"
@@ -29,16 +28,17 @@ var unitPerStepAz = 360 / stepsPerRevolveAz * teethMotor / teethAz / microsteppi
 var unitPerStepAlt = 360 / stepsPerRevolveAlt * teethMotor / teethAlt / microsteppingAlt
 
 type AltAzDriver struct {
-	Altitude  stepper.Stepper
-	Azimuth   stepper.Stepper
-	storeData *store.Store
+	Altitude        stepper.Stepper
+	Azimuth         stepper.Stepper
+	stellarPosition *position.StellarPosition
+	groundPosition  *position.GroundPosition
 }
 type AltAzDriverData struct {
 	Altitude stepper.StepperData
 	Azimuth  stepper.StepperData
 }
 
-func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr uint8, storeNew *store.Store) AltAzDriver {
+func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr uint8, groundPosition *position.GroundPosition, stellarPosition *position.StellarPosition) AltAzDriver {
 	err := rpio.Open()
 	if err != nil {
 		panic(err)
@@ -60,12 +60,11 @@ func NewAltAzDriver(azStepNr, azDirNr, azEnaNr, altStepNr, altDirNr, altEnaNr ui
 	altEna.Output()
 	altitude := stepper.New(azStep, azDir, azEna, unitPerStepAlt, 2000, 10)
 	altitude.SetTarget(5)
-
-	storeNew.TargetPosition.SetAltAzPos(position.AltAzPos{Altitude: unit.AngleFromDeg(5), Azimuth: unit.AngleFromDeg(5)})
 	return AltAzDriver{
-		Altitude:  altitude,
-		Azimuth:   azimuth,
-		storeData: storeNew,
+		Altitude:        altitude,
+		Azimuth:         azimuth,
+		groundPosition:  groundPosition,
+		stellarPosition: stellarPosition,
 	}
 }
 
@@ -75,7 +74,8 @@ func (driver *AltAzDriver) GetData() AltAzDriverData {
 		Altitude: unit.AngleFromDeg(driver.Altitude.GetData().Position),
 		Azimuth:  unit.AngleFromDeg(driver.Azimuth.GetData().Position),
 	}
-	driver.storeData.ActualPosition = position.NewStellarPositionAltAz(altAz, &driver.storeData.GroundPosition)
+
+	*driver.stellarPosition = position.NewStellarPositionAltAz(altAz, driver.groundPosition)
 
 	return AltAzDriverData{
 		Altitude: driver.Altitude.GetData(),

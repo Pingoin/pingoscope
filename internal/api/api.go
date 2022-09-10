@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/Pingoin/pingoscope/internal/altazdriver"
 	"github.com/Pingoin/pingoscope/internal/store"
+	"github.com/Pingoin/pingoscope/pkg/altazdriver"
 	"github.com/Pingoin/pingoscope/pkg/position"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

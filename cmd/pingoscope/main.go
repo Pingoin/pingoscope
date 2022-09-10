@@ -9,13 +9,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Pingoin/pingoscope/internal/altazdriver"
 	"github.com/Pingoin/pingoscope/internal/api"
 	"github.com/Pingoin/pingoscope/internal/imu"
 	"github.com/Pingoin/pingoscope/internal/store"
+	"github.com/Pingoin/pingoscope/pkg/altazdriver"
 	"github.com/Pingoin/pingoscope/pkg/gnss"
+	"github.com/Pingoin/pingoscope/pkg/lx200"
 	"github.com/Pingoin/pingoscope/pkg/position"
-	"github.com/Pingoin/pingoscope/pkg/raspicam"
 	"github.com/Pingoin/pingoscope/pkg/stellariumadapter"
 
 	"github.com/soniakeys/unit"
@@ -41,7 +41,12 @@ func main() {
 			Longitude: unit.NewAngle(' ', 14, 0, 48.16),
 		},
 	)
-
+	connect := lx200.NewLx200(&storefiles.GroundPosition)
+	ascomTcp := lx200.NewTCP("", "9999", connect)
+	go ascomTcp.Start()
+	defer ascomTcp.Stop()
+	result, _ := connect.Command(":Gt#")
+	fmt.Println(result)
 	options := serial.OpenOptions{
 		PortName:        "/dev/serial0",
 		BaudRate:        9600,
@@ -61,9 +66,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	go raspicam.Cam(&storefiles.Image)
+	//go raspicam.Cam(&storefiles.Image)
 	//azStep dir sollte 19 sein, nut test auf 3
-	driver := altazdriver.NewAltAzDriver(3, 13, 12, 18, 24, 4, &storefiles)
+	driver := altazdriver.NewAltAzDriver(3, 13, 12, 18, 24, 4, &storefiles.GroundPosition, &storefiles.ActualPosition)
 	go driver.Altitude.Loop()
 	go driver.Azimuth.Loop()
 	fmt.Printf("azimuth: %v\n", driver.Azimuth.GetData())
