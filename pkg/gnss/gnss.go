@@ -1,97 +1,76 @@
 package gnss
 
 import (
-	"bufio"
 	"fmt"
-	"io"
-	"log"
+
+	"github.com/stratoberry/go-gpsd"
 
 	"github.com/Pingoin/pingoscope/pkg/position"
-	"github.com/adrianmo/go-nmea"
-	"github.com/jacobsa/go-serial/serial"
+
 	"github.com/soniakeys/unit"
 )
 
-type Gnss struct {
-	position *position.GroundPosition
-	reader   *bufio.Reader
-	serial   io.ReadWriteCloser
-	data     *GnssData
-}
+var groundPosition *position.GroundPosition
+var data *GnssData
+var fix []string = []string{"unkown", "no fix", "2D", "3D"}
 
-func NewGnss(position *position.GroundPosition, data *GnssData, options serial.OpenOptions) Gnss {
-	// Open the port.
-	port, err := serial.Open(options)
-	if err != nil {
-		fmt.Printf("serial.Open: %v \n", err)
+func StartGNSS(position *position.GroundPosition, inputData *GnssData) {
+	data = inputData
+	groundPosition = position
+
+	var gps *gpsd.Session
+	var err error
+
+	if gps, err = gpsd.Dial(gpsd.DefaultAddress); err != nil {
+		panic(fmt.Sprintf("Failed to connect to GPSD: %s", err))
 	}
-	reader := bufio.NewReader(port)
 
-	result := Gnss{
-		position: position,
-		reader:   reader,
-		serial:   port,
-		data:     data,
-	}
-	return result
+	gps.AddFilter("TPV", tpvFilter)
+	gps.AddFilter("SKY", skyfilter)
+	done := gps.Watch()
+	<-done
 }
 
-func (gnss *Gnss) Close() {
-	gnss.serial.Close()
+func tpvFilter(r interface{}) {
+	tpv := r.(*gpsd.TPVReport)
+
+	mode := tpv.Mode
+	data.Fix = fix[mode]
+	data.Alt = tpv.Alt
+	groundPosition.Latitude = unit.AngleFromDeg(tpv.Lat)
+	groundPosition.Longitude = unit.AngleFromDeg(tpv.Lon)
 }
 
-func (gnss *Gnss) Loop() {
-	_, _ = gnss.reader.ReadBytes('\x0a')
-	for {
-		buffer, _ := gnss.reader.ReadBytes('\x0a')
-		s, err := nmea.Parse(string(buffer))
-		if err != nil {
-			log.Println(err)
+func skyfilter(r interface{}) {
+	sky := r.(*gpsd.SKYReport)
+	data.Hdop = sky.Hdop
+	data.Pdop = sky.Pdop
+	data.Vdop = sky.Vdop
+	sats := sky.Satellites
+	gpsSats := make([]GSVInfo, 0)
+	glonassSats := make([]GSVInfo, 0)
+	baidouSats := make([]GSVInfo, 0)
+	galileoSats := make([]GSVInfo, 0)
+
+	for _, sat := range sats {
+		newSat := GSVInfo{
+			SVPRNNumber: sat.PRN,
+			Elevation:   sat.El,
+			Azimuth:     sat.Az,
+			SNR:         sat.Ss,
+			Used:        sat.Used,
+		}
+
+		if (newSat.SVPRNNumber >= 1) && (newSat.SVPRNNumber <= 63) {
+			gpsSats = append(gpsSats, newSat)
+		} else if (newSat.SVPRNNumber >= 64) && (newSat.SVPRNNumber <= 96) {
+			glonassSats = append(glonassSats, newSat)
 		} else {
-			if s.DataType() == nmea.TypeRMC {
-				m := s.(nmea.RMC)
-				if m.Validity == "A" {
-					*gnss.position = position.GroundPosition{
-						Latitude:  unit.AngleFromDeg(m.Latitude),
-						Longitude: unit.AngleFromDeg(m.Longitude),
-					}
-				}
-			} else if s.DataType() == nmea.TypeGSV {
-				gsv := s.(nmea.GSV)
-
-				switch gsv.Talker {
-				case "GL":
-					if gsv.MessageNumber == 1 {
-						gnss.data.SatsGlonassVisible = []nmea.GSVInfo{}
-					}
-					gnss.data.SatsGlonassVisible = append(gnss.data.SatsGlonassVisible, gsv.Info...)
-				case "GP":
-					if gsv.MessageNumber == 1 {
-						gnss.data.SatsGpsVisible = []nmea.GSVInfo{}
-					}
-					gnss.data.SatsGpsVisible = append(gnss.data.SatsGpsVisible, gsv.Info...)
-				case "GA":
-					if gsv.MessageNumber == 1 {
-						gnss.data.SatsGalileoVisible = []nmea.GSVInfo{}
-					}
-					gnss.data.SatsGalileoVisible = append(gnss.data.SatsGalileoVisible, gsv.Info...)
-				case "GB", "BD":
-					if gsv.MessageNumber == 1 {
-						gnss.data.SatsBeidouVisible = []nmea.GSVInfo{}
-					}
-					gnss.data.SatsBeidouVisible = append(gnss.data.SatsBeidouVisible, gsv.Info...)
-				}
-			} else if s.DataType() == nmea.TypeGSA {
-				gsa := s.(nmea.GSA)
-				gnss.data.Hdop = gsa.HDOP
-				gnss.data.Pdop = gsa.PDOP
-				gnss.data.Vdop = gsa.VDOP
-				gnss.data.Fix = gsa.FixType
-			} else if s.DataType() == nmea.TypeGGA {
-				gga := s.(nmea.GGA)
-				gnss.data.Alt = gga.Altitude
-			}
-
+			galileoSats = append(galileoSats, newSat)
 		}
 	}
+	data.SatsGpsVisible = gpsSats
+	data.SatsGlonassVisible = glonassSats
+	data.SatsGalileoVisible = galileoSats
+	data.SatsBeidouVisible = baidouSats
 }

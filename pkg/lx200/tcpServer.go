@@ -52,7 +52,10 @@ func (t *TCPserver) handleIncomingRequest(conn net.Conn) {
 		//log.Fatal(err)
 	}
 	// respond
-	result, _ := t.mount.Command(string(buffer))
+	result, err := t.mount.Command(string(buffer))
+	if err != nil {
+		log.Println(err)
+	}
 	fmt.Println(result)
 	conn.Write([]byte(result))
 	// close conn

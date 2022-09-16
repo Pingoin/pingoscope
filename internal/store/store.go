@@ -3,7 +3,6 @@ package store
 import (
 	"github.com/Pingoin/pingoscope/pkg/gnss"
 	"github.com/Pingoin/pingoscope/pkg/position"
-	"github.com/adrianmo/go-nmea"
 )
 
 type Store struct {
@@ -22,10 +21,10 @@ func NewStore(ground position.GroundPosition) Store {
 
 	gnssTemp := gnss.GnssData{
 		Alt:                0,
-		SatsGpsVisible:     []nmea.GSVInfo{},
-		SatsGlonassVisible: []nmea.GSVInfo{},
-		SatsGalileoVisible: []nmea.GSVInfo{},
-		SatsBeidouVisible:  []nmea.GSVInfo{},
+		SatsGpsVisible:     []gnss.GSVInfo{},
+		SatsGlonassVisible: []gnss.GSVInfo{},
+		SatsGalileoVisible: []gnss.GSVInfo{},
+		SatsBeidouVisible:  []gnss.GSVInfo{},
 		Fix:                "",
 		Hdop:               0,
 		Pdop:               0,

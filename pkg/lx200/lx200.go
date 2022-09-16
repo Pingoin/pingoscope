@@ -16,8 +16,10 @@ type Lx200 struct {
 }
 
 func (l *Lx200) Command(cmd string) (string, error) {
-
+	log.Println(cmd)
 	command := cmd[1:3]
+
+	// :GR :GD :Sr :Sd :MS :Mx :CM :Q :GVP :GVN ACK
 
 	switch command {
 	//case "SC": //	:SCMM/DD/YY#	Reply: 0 or 1	Set date
@@ -71,17 +73,17 @@ func (l *Lx200) Command(cmd string) (string, error) {
 	case "Go":
 		return "+89*#", nil
 	case "GV":
-		switch cmd {
-		case ":GVP#":
+		switch cmd[1:4] {
+		case "GVP":
 			return "Pingoscope#", nil
-		case ":GVD#":
+		case "GVD":
 			return "12:00:00#", nil
-		case ":GVT#":
+		case "GVT":
 			return "30.07.22#", nil
-		case ":GVN#":
-			return "1.0o#", nil
+		case "GVN":
+			return "3.16o#", nil
 		default:
-			return "", errors.New("unknown Command: " + cmd)
+			return "", errors.New("unknown Command: '" + cmd + "'")
 		}
 	default:
 		log.Println("unknown Command: " + cmd)

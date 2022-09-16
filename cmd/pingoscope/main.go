@@ -20,8 +20,6 @@ import (
 
 	"github.com/soniakeys/unit"
 	"github.com/stianeikeland/go-rpio/v4"
-
-	"github.com/jacobsa/go-serial/serial"
 )
 
 const (
@@ -42,23 +40,12 @@ func main() {
 		},
 	)
 	connect := lx200.NewLx200(&storefiles.GroundPosition)
-	ascomTcp := lx200.NewTCP("", "9999", connect)
+	ascomTcp := lx200.NewTCP("", "4030", connect)
 	go ascomTcp.Start()
 	defer ascomTcp.Stop()
-	result, _ := connect.Command(":Gt#")
-	fmt.Println(result)
-	options := serial.OpenOptions{
-		PortName:        "/dev/serial0",
-		BaudRate:        9600,
-		DataBits:        8,
-		StopBits:        1,
-		MinimumReadSize: 80,
-	}
 
-	gnss := gnss.NewGnss(&storefiles.GroundPosition, &storefiles.GnssData, options)
+	go gnss.StartGNSS(&storefiles.GroundPosition, &storefiles.GnssData)
 
-	go gnss.Loop()
-	defer gnss.Close()
 	go stellariumadapter.Socket(connType, connHost, connPort, &storefiles.StellariumPosition, &storefiles.ActualPosition)
 
 	err := rpio.Open()

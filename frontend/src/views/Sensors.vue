@@ -56,11 +56,11 @@ export default class Position extends Vue {
   }
   get satHeaders() {
     return [
-      { text: "PRN-ID", value: "SVPRNNumber" },
+      { text: "PRN-ID", value: "prn" },
       { text: "Satelliten-System", value: "system" },
-      { text: "Altitude", value: "Elevation" },
-      { text: "Azimut", value: "Azimuth" },
-      { text: "Signal-Noise-Ratio", value: "SNR" }
+      { text: "Altitude", value: "elevation" },
+      { text: "Azimut", value: "azimuth" },
+      { text: "Signal-Noise-Ratio", value: "snr" }
     ];
   }
   get satsVisible() {
