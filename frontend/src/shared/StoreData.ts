@@ -22,10 +22,7 @@ export interface wsPost {
 }
 export interface gnssData {
   alt: number;
-  satsBeidouVisible:satData[];
-  satsGalileoVisible:satData[];
-  satsGlonassVisible:satData[];
-  satsGpsVisible:satData[];
+  satsVisible:satData[];
   fix: string;
   hdop: number;
   pdop: number;

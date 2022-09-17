@@ -2,7 +2,7 @@ import { createModule, mutation, action, extractVuexModule, createProxy } from "
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from "axios";
-import { satData, StoreData,Direction } from "../shared";
+import {satData,StoreData,Direction} from "../shared/index"
 
 
 const VuexModule = createModule({
@@ -17,10 +17,7 @@ export class UserStore extends VuexModule {
     latitude: 0,
     gnssData: {
       alt: 0,
-      satsGpsVisible: new Array<satData>(),
-      satsGlonassVisible: new Array<satData>(),
-      satsGalileoVisible: new Array<satData>(),
-      satsBeidouVisible: new Array<satData>(),
+      satsVisible: new Array<satData>(),
       fix: "3D",
       hdop: 0,
       pdop: 0,

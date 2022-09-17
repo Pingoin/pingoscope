@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/Pingoin/pingoscope/pkg/gnss"
+	gnss "github.com/Pingoin/gpsd-client"
 	"github.com/Pingoin/pingoscope/pkg/position"
 )
 
@@ -14,7 +14,7 @@ type StoreData struct {
 	StellariumTarget    position.StellarPositionData `json:"stellariumTarget"`
 	ActualPosition      position.StellarPositionData `json:"actualPosition"`
 	SystemInformation   sysInfo                      `json:"systemInformation"`
-	GnssData            gnss.GnssData                `json:"gnssData"`
+	Gnss                gnss.GPSD                    `json:"gnssData"`
 }
 
 type sysInfo struct {

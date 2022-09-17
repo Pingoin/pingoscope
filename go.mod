@@ -11,9 +11,10 @@ require (
 	github.com/stianeikeland/go-rpio/v4 v4.6.0
 )
 
-require github.com/stratoberry/go-gpsd v1.0.0
+require github.com/stratoberry/go-gpsd v1.0.0 // indirect
 
 require (
+	github.com/Pingoin/gpsd-client v0.0.0-20220917112057-7f5306507297
 	github.com/dhowden/raspicam v0.0.0-20190323051945-60ef25a6629f
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/labstack/gommon v0.3.1 // indirect

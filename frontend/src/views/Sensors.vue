@@ -41,7 +41,7 @@ import StatusString from "../components/StatusString.vue";
 import StatusNumber from "../components/StatusNumber.vue";
 import StatusUnit from "../components/StatusUnit.vue";
 import { radToString,radToHourString } from "../plugins/angles";
-import { StellarPositionData } from "../../../shared";
+import { StellarPositionData } from "../shared/index";
 
 @Component({
   components: {
@@ -57,33 +57,14 @@ export default class Position extends Vue {
   get satHeaders() {
     return [
       { text: "PRN-ID", value: "prn" },
-      { text: "Satelliten-System", value: "system" },
+      { text: "Satelliten-System", value: "type" },
       { text: "Altitude", value: "elevation" },
       { text: "Azimut", value: "azimuth" },
       { text: "Signal-Noise-Ratio", value: "snr" }
     ];
   }
   get satsVisible() {
-    let sats = vxm.user.storeData.gnssData.satsGlonassVisible.map(x => {
-      (x as any)["system"] = "GLONASS";
-      return x;
-    });
-
-    vxm.user.storeData.gnssData.satsGpsVisible.map(x => {
-      (x as any)["system"] = "GPS";
-      return x;
-    }).forEach(sat=>sats.push(sat))
-
-        vxm.user.storeData.gnssData.satsGalileoVisible.map(x => {
-      (x as any)["system"] = "Galileo";
-      return x;
-    }).forEach(sat=>sats.push(sat))
-
-        vxm.user.storeData.gnssData.satsBeidouVisible.map(x => {
-      (x as any)["system"] = "Beidou";
-      return x;
-    }).forEach(sat=>sats.push(sat))
-
+    let sats = vxm.user.storeData.gnssData.satsVisible
     return sats;
   }
   radToString(rad: number): string {

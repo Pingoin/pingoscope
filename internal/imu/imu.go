@@ -37,7 +37,7 @@ func Init(storeData *store.Store) {
 			Altitude: unit.AngleFromDeg(float64(vector.Z)),
 			Azimuth:  unit.AngleFromDeg(float64(vector.X)),
 		}
-		storeData.SensorPosition = position.NewStellarPositionAltAz(altAz, &storeData.GroundPosition)
+		storeData.SensorPosition = position.NewStellarPositionAltAz(altAz, storeData.GroundPosition)
 		time.Sleep(100 * time.Millisecond)
 	}
 }
