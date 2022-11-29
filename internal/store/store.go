@@ -42,8 +42,8 @@ func (store *Store) GetData() StoreData {
 	data.ActualPosition = store.ActualPosition.GetData()
 	data.StellariumTarget = store.StellariumPosition.GetData()
 	data.TargetPosition = store.TargetPosition.GetData()
-	data.Latitude = store.Gnss.Latitude
-	data.Longitude = store.Gnss.Longitude
+	data.Latitude = store.Gnss.Position.Latitude
+	data.Longitude = store.Gnss.Position.Longitude
 	data.Gnss = *store.Gnss
 	return data
 }
@@ -51,7 +51,7 @@ func (store *Store) GetData() StoreData {
 func (store *Store) refreshGround() {
 	for {
 		time.Sleep(time.Second * 5)
-		store.GroundPosition.Latitude = unit.AngleFromDeg(store.Gnss.Latitude)
-		store.GroundPosition.Longitude = unit.AngleFromDeg(store.Gnss.Longitude)
+		store.GroundPosition.Latitude = unit.AngleFromDeg(store.Gnss.Position.Latitude)
+		store.GroundPosition.Longitude = unit.AngleFromDeg(store.Gnss.Position.Longitude)
 	}
 }
